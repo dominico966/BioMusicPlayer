@@ -1,25 +1,16 @@
 package com.ljy.musicplayer.biomusicplayer;
 
+import android.view.View;
+
 /**
  * Created by wjddp on 2018-03-29.
  */
 
 public class ListViewItem {
 
+    private int layoutId;
     private int type;
-
-    private String modeName;
-    private int musicImg;
-    private String musicName;
-    private Boolean modeState;
-
-    public Boolean getModeState() {
-        return modeState;
-    }
-
-    public void setModeState(Boolean modeState) {
-        this.modeState = modeState;
-    }
+    private View view;
 
     public int getType() {
         return type;
@@ -29,27 +20,20 @@ public class ListViewItem {
         this.type = type;
     }
 
-    public String getModeName() {
-        return modeName;
+    public int getLayoutId() {
+        return layoutId;
     }
 
-    public void setModeName(String modeName) {
-        this.modeName = modeName;
+    public void setLayoutId(int layoutId) {
+        this.layoutId = layoutId;
     }
 
-    public int getMusicImg() {
-        return musicImg;
+    public void setView(View view) {
+        this.view = view;
     }
 
-    public void setMusicImg(int musicImg) {
-        this.musicImg = musicImg;
-    }
+    public View getView() {
+        return view;
 
-    public String getMusicName() {
-        return musicName;
-    }
-
-    public void setMusicName(String musicName) {
-        this.musicName = musicName;
     }
 }

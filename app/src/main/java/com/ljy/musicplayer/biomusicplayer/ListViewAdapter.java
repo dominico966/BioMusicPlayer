@@ -5,9 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
@@ -17,20 +14,26 @@ import java.util.ArrayList;
 
 public class ListViewAdapter extends BaseAdapter {
 
+    private BioMusicPlayerApplication app;
+
     private static final int ITEM_VIEW_TYPE_MODE = 0;
     private static final int ITEM_VIEW_TYPE_SONG = 1;
-    private static final int ITEM_VIEW_TYPE_MAX = 2;
+    private static final int ITEM_VIEW_TYPE_MINDWAVE_STATE = 2;
+    private static final int ITEM_VIEW_TYPE_MAX = 3;
 
     // 아이템 데이터 리스트
-     private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>() ;
+    private ArrayList<ListViewItem> itemList = new ArrayList<ListViewItem>();
 
-    public ListViewAdapter(){
+    // 공부모드용 아이템 데이터 리스트
+    private ArrayList<ListViewItem> itemListStudy = new ArrayList<ListViewItem>();
 
+    public ListViewAdapter(BioMusicPlayerApplication app) {
+        this.app = app;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return listViewItemList.get(position).getType();
+        return selectItemListByMode().get(position).getType();
     }
 
     @Override
@@ -40,12 +43,12 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return listViewItemList.size();
+        return selectItemListByMode().size();
     }
 
     @Override
     public Object getItem(int i) {
-        return listViewItemList.get(i);
+        return selectItemListByMode().get(i);
     }
 
     @Override
@@ -61,52 +64,72 @@ public class ListViewAdapter extends BaseAdapter {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            ListViewItem listViewItem = listViewItemList.get(pos);
+            ListViewItem listViewItem = selectItemListByMode().get(pos);
 
             switch (viewType) {
-                case ITEM_VIEW_TYPE_MODE:
-                    view = inflater.inflate(R.layout.listview_item1, parent, false);
-                    TextView modeName = view.findViewById(R.id.txtModeName);
-                    ToggleButton toggleButton = view.findViewById(R.id.toggleButton);
+                case ITEM_VIEW_TYPE_MODE: {
+                    ListViewItemMode item = (ListViewItemMode) listViewItem;
+                    view = item.getView(inflater, parent);
+                }
+                break;
 
-                    modeName.setText(listViewItem.getModeName());
-//                    toggleButton.setChecked(listViewItem.getModeState());
+                case ITEM_VIEW_TYPE_MINDWAVE_STATE: {
+                    ListViewItemMindwaveState item = (ListViewItemMindwaveState) listViewItem;
+                    view = item.getView(inflater, parent);
+                }
+                break;
 
-                    break;
-
-                case ITEM_VIEW_TYPE_SONG:
-                    view = inflater.inflate(R.layout.listview_view2, parent, false);
-                    ImageView musicImg = view.findViewById(R.id.musicImg);
-                    TextView musicName = view.findViewById(R.id.musicName);
-
-                    musicImg.setImageResource(listViewItem.getMusicImg());
-                    musicName.setText(listViewItem.getMusicName());
-                    break;
-
+                case ITEM_VIEW_TYPE_SONG: {
+                    ListViewItemSong item = (ListViewItemSong) listViewItem;
+                    view = item.getView(inflater,parent);
+                }
+                break;
             }
         }
         return view;
     }
 
-    public void addItem(String modeName, Boolean modeState) {
-        ListViewItem item = new ListViewItem();
+    //모드별로 아이템 데이터 리스트를 변경해 줌
+    private ArrayList<ListViewItem> selectItemListByMode() {
+        return app.isStudyMode() ? itemListStudy : itemList;
+    }
 
-        item.setType(ITEM_VIEW_TYPE_MODE) ;
+    public void addItem(String modeName, Boolean modeState, View.OnClickListener toggleButtonEvent) {
+        ListViewItemMode item = new ListViewItemMode();
+
+        item.setType(ITEM_VIEW_TYPE_MODE);
+        item.setLayoutId(R.layout.listview_item1);
         item.setModeName(modeName);
         item.setModeState(modeState);
+        item.setOnToggleButtonClick(toggleButtonEvent);
 
-        listViewItemList.add(item);
+        itemList.add(item);
+        itemListStudy.add(item);
     }
 
     public void addItem(int musicImg, String musicName) {
-        ListViewItem item = new ListViewItem();
+        ListViewItemSong item = new ListViewItemSong();
 
-        item.setType(ITEM_VIEW_TYPE_SONG) ;
+        item.setType(ITEM_VIEW_TYPE_SONG);
+        item.setLayoutId(R.layout.listview_view2);
         item.setMusicImg(musicImg);
         item.setMusicName(musicName);
 
-        listViewItemList.add(item );
+        itemList.add(item);
+        itemListStudy.add(item);
+    }
 
+    public void addItem(Mindwave mindwave) {
+        ListViewItemMindwaveState item = new ListViewItemMindwaveState(mindwave);
+
+        item.setType(ITEM_VIEW_TYPE_MINDWAVE_STATE);
+        item.setLayoutId(R.layout.listview_item_mindwave_state);
+
+        itemListStudy.add(item);
+    }
+
+    public void refresh() {
+        notifyDataSetChanged();
     }
 
 }
