@@ -14,10 +14,10 @@ public class MindwaveController extends AsyncTask<Void, Void, Exception> {
     private Mindwave mMindwave;
     private ProgressDialog mProgressDialog;
 
-    public MindwaveController(Context context,Mindwave mindwave) {
+    public MindwaveController(Context context, ProgressDialog progressDialog, Mindwave mindwave) {
         this.mContext = context;
         this.mMindwave = mindwave;
-        this.mProgressDialog = new ProgressDialog(mContext);
+        this.mProgressDialog = progressDialog;
     }
 
     @Override
@@ -53,7 +53,9 @@ public class MindwaveController extends AsyncTask<Void, Void, Exception> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        mProgressDialog = ProgressDialog.show(mContext, null, "장치를 연결 중 입니다...");
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("장치를 연결 중 입니다...");
+        mProgressDialog.show();
     }
 
     @Override

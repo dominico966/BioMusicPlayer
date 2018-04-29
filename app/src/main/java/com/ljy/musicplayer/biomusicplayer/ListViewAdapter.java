@@ -1,10 +1,15 @@
 package com.ljy.musicplayer.biomusicplayer;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
+import com.dominic.skuface.FaceApi;
 
 import java.util.ArrayList;
 
@@ -14,12 +19,11 @@ import java.util.ArrayList;
 
 public class ListViewAdapter extends BaseAdapter {
 
-    private BioMusicPlayerApplication app;
-
     private static final int ITEM_VIEW_TYPE_MODE = 0;
     private static final int ITEM_VIEW_TYPE_SONG = 1;
     private static final int ITEM_VIEW_TYPE_MINDWAVE_STATE = 2;
-    private static final int ITEM_VIEW_TYPE_MAX = 3;
+    private static final int ITEM_VIEW_TYPE_NORMAL = 3;
+    private static final int ITEM_VIEW_TYPE_MAX = 4;
 
     // 아이템 데이터 리스트
     private ArrayList<ListViewItem> itemList = new ArrayList<ListViewItem>();
@@ -27,8 +31,7 @@ public class ListViewAdapter extends BaseAdapter {
     // 공부모드용 아이템 데이터 리스트
     private ArrayList<ListViewItem> itemListStudy = new ArrayList<ListViewItem>();
 
-    public ListViewAdapter(BioMusicPlayerApplication app) {
-        this.app = app;
+    public ListViewAdapter(){
     }
 
     @Override
@@ -79,9 +82,16 @@ public class ListViewAdapter extends BaseAdapter {
                 }
                 break;
 
+                case ITEM_VIEW_TYPE_NORMAL: {
+                    Log.d("pwy.index",pos+"");
+                    ListViewItemFaceEmotion item = (ListViewItemFaceEmotion) listViewItem;
+                    view = item.getView(inflater, parent);
+                }
+                break;
+
                 case ITEM_VIEW_TYPE_SONG: {
                     ListViewItemSong item = (ListViewItemSong) listViewItem;
-                    view = item.getView(inflater,parent);
+                    view = item.getView(inflater, parent);
                 }
                 break;
             }
@@ -91,10 +101,10 @@ public class ListViewAdapter extends BaseAdapter {
 
     //모드별로 아이템 데이터 리스트를 변경해 줌
     private ArrayList<ListViewItem> selectItemListByMode() {
-        return app.isStudyMode() ? itemListStudy : itemList;
+        return BioMusicPlayerApplication.getInstance().isStudyMode() ? itemListStudy : itemList;
     }
 
-    public void addItem(String modeName, Boolean modeState, View.OnClickListener toggleButtonEvent) {
+    public void addItemMode(String modeName, Boolean modeState, View.OnClickListener toggleButtonEvent) {
         ListViewItemMode item = new ListViewItemMode();
 
         item.setType(ITEM_VIEW_TYPE_MODE);
@@ -107,25 +117,40 @@ public class ListViewAdapter extends BaseAdapter {
         itemListStudy.add(item);
     }
 
-    public void addItem(int musicImg, String musicName) {
+    public void addItemSong(Drawable musicImg, String musicName, String singerName,String filePath) {
         ListViewItemSong item = new ListViewItemSong();
 
         item.setType(ITEM_VIEW_TYPE_SONG);
-        item.setLayoutId(R.layout.listview_view2);
+        item.setLayoutId(R.layout.listview_item_song);
         item.setMusicImg(musicImg);
         item.setMusicName(musicName);
+        item.setSingerName(singerName);
+        item.setFilePath(filePath);
+
+        item.setPosition(ListViewItemSong.songList.size());
+        ListViewItemSong.songList.add(item);
 
         itemList.add(item);
         itemListStudy.add(item);
     }
 
-    public void addItem(Mindwave mindwave) {
+    public void addItemMindwaveState(Mindwave mindwave) {
         ListViewItemMindwaveState item = new ListViewItemMindwaveState(mindwave);
 
         item.setType(ITEM_VIEW_TYPE_MINDWAVE_STATE);
         item.setLayoutId(R.layout.listview_item_mindwave_state);
 
         itemListStudy.add(item);
+    }
+
+    public void addItemFaceEmotion(Bitmap bitmap, FaceApi.Face face) {
+        ListViewItemFaceEmotion item = new ListViewItemFaceEmotion(bitmap, face);
+
+        item.setType(ITEM_VIEW_TYPE_NORMAL);
+        item.setLayoutId(R.layout.listview_item_face_emotion);
+
+        itemList.remove(1);
+        itemList.add(1,item);
     }
 
     public void refresh() {
