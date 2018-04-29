@@ -31,9 +31,6 @@ public class ListViewAdapter extends BaseAdapter {
     // 공부모드용 아이템 데이터 리스트
     private ArrayList<ListViewItem> itemListStudy = new ArrayList<ListViewItem>();
 
-    public ListViewAdapter(){
-    }
-
     @Override
     public int getItemViewType(int position) {
         return selectItemListByMode().get(position).getType();
@@ -64,37 +61,36 @@ public class ListViewAdapter extends BaseAdapter {
         final Context context = parent.getContext();
         int viewType = getItemViewType(pos);
 
-        if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        Log.d("pwy", "getView called " + pos);
 
-            ListViewItem listViewItem = selectItemListByMode().get(pos);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            switch (viewType) {
-                case ITEM_VIEW_TYPE_MODE: {
-                    ListViewItemMode item = (ListViewItemMode) listViewItem;
-                    view = item.getView(inflater, parent);
-                }
-                break;
+        ListViewItem listViewItem = selectItemListByMode().get(pos);
 
-                case ITEM_VIEW_TYPE_MINDWAVE_STATE: {
-                    ListViewItemMindwaveState item = (ListViewItemMindwaveState) listViewItem;
-                    view = item.getView(inflater, parent);
-                }
-                break;
-
-                case ITEM_VIEW_TYPE_NORMAL: {
-                    Log.d("pwy.index",pos+"");
-                    ListViewItemFaceEmotion item = (ListViewItemFaceEmotion) listViewItem;
-                    view = item.getView(inflater, parent);
-                }
-                break;
-
-                case ITEM_VIEW_TYPE_SONG: {
-                    ListViewItemSong item = (ListViewItemSong) listViewItem;
-                    view = item.getView(inflater, parent);
-                }
-                break;
+        switch (viewType) {
+            case ITEM_VIEW_TYPE_MODE: {
+                ListViewItemMode item = (ListViewItemMode) listViewItem;
+                view = item.getView(inflater, parent);
             }
+            break;
+
+            case ITEM_VIEW_TYPE_MINDWAVE_STATE: {
+                ListViewItemMindwaveState item = (ListViewItemMindwaveState) listViewItem;
+                view = item.getView(inflater, parent);
+            }
+            break;
+
+            case ITEM_VIEW_TYPE_NORMAL: {
+                ListViewItemFaceEmotion item = (ListViewItemFaceEmotion) listViewItem;
+                view = item.getView(inflater, parent);
+            }
+            break;
+
+            case ITEM_VIEW_TYPE_SONG: {
+                ListViewItemSong item = (ListViewItemSong) listViewItem;
+                view = item.getView(inflater, parent);
+            }
+            break;
         }
         return view;
     }
@@ -117,7 +113,7 @@ public class ListViewAdapter extends BaseAdapter {
         itemListStudy.add(item);
     }
 
-    public void addItemSong(Drawable musicImg, String musicName, String singerName,String filePath) {
+    public void addItemSong(Drawable musicImg, String musicName, String singerName, String filePath) {
         ListViewItemSong item = new ListViewItemSong();
 
         item.setType(ITEM_VIEW_TYPE_SONG);
@@ -127,7 +123,6 @@ public class ListViewAdapter extends BaseAdapter {
         item.setSingerName(singerName);
         item.setFilePath(filePath);
 
-        item.setPosition(ListViewItemSong.songList.size());
         ListViewItemSong.songList.add(item);
 
         itemList.add(item);
@@ -149,12 +144,12 @@ public class ListViewAdapter extends BaseAdapter {
         item.setType(ITEM_VIEW_TYPE_NORMAL);
         item.setLayoutId(R.layout.listview_item_face_emotion);
 
-        itemList.remove(1);
-        itemList.add(1,item);
-    }
-
-    public void refresh() {
-        notifyDataSetChanged();
+        if (itemList.get(1) instanceof ListViewItemFaceEmotion) {
+            itemList.add(2, item);
+            itemList.remove(1);
+        } else {
+            itemList.add(1, item);
+        }
     }
 
 }

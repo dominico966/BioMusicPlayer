@@ -149,27 +149,28 @@ public class Tab1Fragment extends Fragment {
                 Mp3File mp3File = new Mp3File(f.getAbsolutePath());
 
                 String fileName = f.getName().split(".mp3")[0];
-                String songName = null;
-                String singerName = null;
+                String songName = fileName;
+                String singerName = "";
                 String filePath = f.getAbsolutePath();
+
+                Log.d("pwy title", songName);
+
+                //listViewAdapter.addItemSong(resize, songName, singerName, filePath);
+
 
                 if (mp3File.hasId3v1Tag()) {
                     ID3v1 tag = mp3File.getId3v1Tag();
 
                     if (tag.getTitle() != null) {
                         songName = new String(tag.getTitle().getBytes("ISO-8859-1"), "EUC-KR");
-                    } else {
-                        songName = fileName;
+                        if(songName.trim().equals("")) songName = fileName;
                     }
 
                     if (tag.getArtist() != null) {
                         singerName = new String(tag.getArtist().getBytes("ISO-8859-1"), "EUC-KR");
-                    } else {
-                        singerName = fileName;
                     }
 
                     listViewAdapter.addItemSong(resize, songName, singerName, filePath);
-                    Log.d("pwy title", tag.getTitle());
 
                 } else if (mp3File.hasId3v2Tag()) {
                     ID3v2 tag = mp3File.getId3v2Tag();
@@ -177,36 +178,34 @@ public class Tab1Fragment extends Fragment {
 
                     if (tag.getTitle() != null) {
                         songName = new String(tag.getTitle().getBytes("ISO-8859-1"), "EUC-KR");
-                    } else {
-                        songName = fileName;
+                        if(songName.trim().equals("")) songName = fileName;
                     }
 
                     if (tag.getArtist() != null) {
                         singerName = new String(tag.getArtist().getBytes("ISO-8859-1"), "EUC-KR");
-                    } else {
-                        singerName = fileName;
                     }
 
+                    BitmapDrawable bd = resize;
                     if (imageData != null) {
                         Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length - 1);
                         Bitmap resizeBitmap = resizeBitmap(imageBitmap, 256, 256 * drawableToBitmap.getHeight() / drawableToBitmap.getWidth());
-                        BitmapDrawable bd = new BitmapDrawable(getResources(), resizeBitmap);
-                        listViewAdapter.addItemSong(bd, songName, singerName, filePath);
-
                         imageBitmap.recycle();
-                    } else {
-                        listViewAdapter.addItemSong(resize, songName, singerName, filePath);
+
+                        bd = new BitmapDrawable(getResources(), resizeBitmap);
                     }
 
-                    Log.d("pwy title", tag.getTitle() + "");
+                    listViewAdapter.addItemSong(bd, songName, singerName, filePath);
+
+                } else {
+                    listViewAdapter.addItemSong(resize, songName, singerName, filePath);
                 }
             }
+
+            listViewAdapter.notifyDataSetChanged();
 
         } catch (IOException | UnsupportedTagException | InvalidDataException e) {
             e.printStackTrace();
         }
-
-        listViewAdapter.refresh();
     }
 
     // 이 밑으로는 이벤트만 선언
@@ -241,8 +240,7 @@ public class Tab1Fragment extends Fragment {
                 mMindwave.stop();
             }
 
-            listViewAdapter.refresh();
-            listView.invalidate();
+            listViewAdapter.notifyDataSetChanged();
 
             //로깅
             Log.d("pwy " + app.getClass().getSimpleName() + ".isStudyMode()", app.isStudyMode() + "");
@@ -255,19 +253,15 @@ public class Tab1Fragment extends Fragment {
     FaceApi.OnResponseListener onResponseListener = new FaceApi.OnResponseListener() {
         @Override
         public void onResponse(final Bitmap framedImage, final List<FaceApi.Face> faceList) {
-            Log.d("pwy", "OnResponseListener start");
-            Log.d("pwy",framedImage.toString());
+            Log.d("pwy", framedImage.toString());
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     progressDialog.dismiss();
                     if (faceList.isEmpty()) return;
 
-                    Log.d("pwy",faceList.get(faceList.size()-1).getEmotion().neutral+"");
-
-                    listViewAdapter.addItemFaceEmotion(framedImage, faceList.get(faceList.size()-1));
-                    listViewAdapter.refresh();
-                    Log.d("pwy", "OnResponseListener end");
+                    listViewAdapter.addItemFaceEmotion(framedImage, faceList.get(faceList.size() - 1));
+                    listViewAdapter.notifyDataSetChanged();
                 }
             });
         }
@@ -277,7 +271,6 @@ public class Tab1Fragment extends Fragment {
     FaceDetectionCamera.OnFaceDetectedListener faceDetectedListener = new FaceDetectionCamera.OnFaceDetectedListener() {
         @Override
         public void onFaceDetected(Bitmap capturedFace) {
-            Log.d("pwy", "OnFaceDetectedListener start");
 
             //faceImage.setImageBitmap(capturedFace);
             int width = capturedFace.getWidth();
@@ -287,7 +280,6 @@ public class Tab1Fragment extends Fragment {
             faceApi.clearFaceList();
             faceApi.detectAndFrameRest(resize);
             faceDetectionCamera.stopFaceDetection();
-            Log.d("pwy", "OnFaceDetectedListener end");
         }
     };
 

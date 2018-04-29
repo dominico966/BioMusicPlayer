@@ -22,19 +22,10 @@ public class ListViewItemSong extends ListViewItem {
     private String musicName;
     private String singerName;
     private String filePath;
-    private int position;
 
     public ListViewItemSong() {
         super();
         super.setLayoutId(R.layout.listview_item_song);
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
     }
 
     public void setFilePath(String filePath) {
@@ -87,22 +78,16 @@ public class ListViewItemSong extends ListViewItem {
         musicName.setText(this.getMusicName());
         musicSinger.setText(this.getSingerName());
 
-        musicName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-        musicName.setMarqueeRepeatLimit(-1);
+        musicName.setEllipsize(TextUtils.TruncateAt.END);
         musicName.setSingleLine(true);
-        musicName.setSelected(true);
-        musicName.requestFocus();
 
-        musicSinger.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-        musicSinger.setMarqueeRepeatLimit(-1);
+        musicSinger.setEllipsize(TextUtils.TruncateAt.END);
         musicSinger.setSingleLine(true);
-        musicSinger.setSelected(true);
-        musicSinger.requestFocus();
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BioMusicPlayerApplication.getInstance().getServiceInterface().play(getPosition()); // 선택한 오디오재생
+                BioMusicPlayerApplication.getInstance().getServiceInterface().play(songList.indexOf(ListViewItemSong.this)); // 선택한 오디오재생
             }
         });
 

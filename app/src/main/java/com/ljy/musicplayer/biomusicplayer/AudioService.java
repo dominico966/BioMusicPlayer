@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class AudioService extends Service {
     private final IBinder mBinder = new AudioServiceBinder();
-    private ArrayList<Long> mAudioIds = new ArrayList<>();
+    private ArrayList<ListViewItemSong> mAudioIds = new ArrayList<>();
     private MediaPlayer mMediaPlayer;
     private boolean isPrepared;
     private int mCurrentPosition;
@@ -99,7 +99,7 @@ public class AudioService extends Service {
         mMediaPlayer.reset();
     }
     // Play list setting
-    public void setPlayList(ArrayList<Long> audioIds) {
+    public void setPlayList(ArrayList<ListViewItemSong> audioIds) {
         if (!mAudioIds.equals(audioIds)) {
             mAudioIds.clear();
             mAudioIds.addAll(audioIds);
@@ -107,6 +107,7 @@ public class AudioService extends Service {
     }
 
     public void play(int position) {
+        mCurrentPosition = position;
         mAudioItem = ListViewItemSong.songList.get(position);
         stop();
         prepare();
