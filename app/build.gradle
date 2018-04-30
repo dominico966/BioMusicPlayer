@@ -35,6 +35,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
 
+    // 그래프 API
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    // 우영 FaceAPI
     implementation 'com.github.dominico966:FaceAPITest:0.9.5'
 
     // https://mvnrepository.com/artifact/com.mpatric/mp3agic
