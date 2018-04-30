@@ -298,7 +298,7 @@ public class Tab1Fragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.fragment_tab1_menu, menu);
     }
 
     @Override

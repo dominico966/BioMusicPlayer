@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_voice_scan"
+        android:icon="@android:drawable/ic_btn_speak_now"
+        android:title="음성인식"
+        app:showAsAction="always" />
+
+</menu>
+
