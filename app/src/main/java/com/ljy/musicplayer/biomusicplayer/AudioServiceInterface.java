@@ -32,7 +32,7 @@ public class AudioServiceInterface {
                 .setPackage(context.getPackageName()), mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void setPlayList(ArrayList<Long> audioIds) {
+    public void setPlayList(ArrayList<ListViewItemSong> audioIds) {
         if (mService != null) {
             mService.setPlayList(audioIds);
         }

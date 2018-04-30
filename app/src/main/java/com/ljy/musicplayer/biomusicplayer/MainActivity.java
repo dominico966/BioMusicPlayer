@@ -11,13 +11,14 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     // music setting 변수
     private final static int LOADER_ID = 0x001;
@@ -49,16 +50,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabLayout.setupWithViewPager(viewPager);
 
         //MiniPlayer 세팅
-        mImgAlbumArt = (ImageView) findViewById(R.id.img_albumart);
-        mTxtTitle = (TextView) findViewById(R.id.txt_title);
-        mBtnPlayPause = (ImageButton) findViewById(R.id.btn_play_pause);
+        mImgAlbumArt = findViewById(R.id.img_albumart);
+        mTxtTitle = findViewById(R.id.txt_title);
+        mBtnPlayPause = findViewById(R.id.btn_play_pause);
 
-
-        /*container.findViewById(R.id.lin_miniplayer).setOnClickListener(getContext());
-        container.findViewById(R.id.btn_rewind).setOnClickListener(getContext());
-        mBtnPlayPause.setOnClickListener(getContext());
-        container.findViewById(R.id.btn_forward).setOnClickListener(getContext());*/
-
+        mTxtTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        mTxtTitle.setMarqueeRepeatLimit(-1);
+        mTxtTitle.setSingleLine(true);
+        mTxtTitle.setSelected(true);
+        mTxtTitle.requestFocus();
         // music Player 실행
         registerBroadcast();
         updateUI();
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //UI update
     private void updateUI() {
+        BioMusicPlayerApplication.getInstance().getServiceInterface().setPlayList(ListViewItemSong.songList);
 
         Log.d("cehck", "AudioApplication.getInstance().getServiceInterface().isPlaying() = " +
                 "?????");
