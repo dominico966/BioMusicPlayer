@@ -6,7 +6,6 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_weight="0.01"
         android:id="@+id/img_music_album"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

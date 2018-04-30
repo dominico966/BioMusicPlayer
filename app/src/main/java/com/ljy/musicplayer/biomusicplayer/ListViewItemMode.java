@@ -19,7 +19,7 @@ public class ListViewItemMode extends ListViewItem {
 
     public ListViewItemMode() {
         super();
-        super.setLayoutId(R.layout.listview_item1);
+        super.setLayoutId(R.layout.listview_item_mode);
     }
 
     public Boolean getModeState() {
@@ -38,13 +38,13 @@ public class ListViewItemMode extends ListViewItem {
         this.modeName = modeName;
     }
 
+    @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View view = super.getView();
+        if(view != null) return view;
 
-        if(view == null) {
-            view = inflater.inflate(getLayoutId(),parent,false);
-            super.setView(view);
-        }
+        view = inflater.inflate(getLayoutId(),parent,false);
+        super.setView(view);
 
         // 선언
         TextView modeName = view.findViewById(R.id.txtModeName);

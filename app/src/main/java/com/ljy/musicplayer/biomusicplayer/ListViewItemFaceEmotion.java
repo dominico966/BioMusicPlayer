@@ -25,9 +25,14 @@ public class ListViewItemFaceEmotion extends ListViewItem {
         Log.d("pwy",face.getEmotion().neutral+"");
     }
 
+    @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
-        View view = inflater.inflate(R.layout.listview_item_face_emotion, parent, false);
+        View view = super.getView();
+        if(view != null) return view;
+
+        view = inflater.inflate(R.layout.listview_item_face_emotion, parent, false);
         super.setView(view);
+
         ImageView faceImage = view.findViewById(R.id.image_view_face);
 
         Log.d("pwy",face.getEmotion().neutral+"");

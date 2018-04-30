@@ -7,13 +7,41 @@ import android.util.Log;
 import java.io.File;
 
 public class BioMusicPlayerApplication extends Application {
+    private File musicDir;
     private boolean isStudyMode = false;
 
-    private File musicDir;
-
     //musicPlayer
-    private static BioMusicPlayerApplication mInstance;
+    private Mindwave mindwave;
     private AudioServiceInterface mInterface;
+    private static BioMusicPlayerApplication mInstance;
+
+
+    public static BioMusicPlayerApplication getInstance() {
+        return mInstance;
+    }
+
+    public File getMusicDir() {
+        return musicDir;
+    }
+    public Mindwave getMindwave() {
+        return mindwave;
+    }
+    public boolean isStudyMode() {
+        return isStudyMode;
+    }
+    public AudioServiceInterface getServiceInterface() {
+        return mInterface;
+    }
+
+    public void setMusicDir(File musicDir) {
+        this.musicDir = musicDir;
+    }
+    public void setMindwave(Mindwave mindwave) {
+        this.mindwave = mindwave;
+    }
+    public void setStudyMode(boolean studyMode) {
+        isStudyMode = studyMode;
+    }
 
     @Override
     public void onCreate() {
@@ -22,41 +50,6 @@ public class BioMusicPlayerApplication extends Application {
         mInstance = this;
         mInterface = new AudioServiceInterface(getApplicationContext());
         musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-    }
-
-    public static BioMusicPlayerApplication getInstance() {
-        return mInstance;
-    }
-
-    public AudioServiceInterface getServiceInterface() {
-        return mInterface;
-    }
-
-
-    public File getMusicDir() {
-        return musicDir;
-    }
-
-    public void setMusicDir(File musicDir) {
-        this.musicDir = musicDir;
-    }
-
-    public Mindwave getMindwave() {
-        return mindwave;
-    }
-
-    public void setMindwave(Mindwave mindwave) {
-        this.mindwave = mindwave;
-    }
-
-    private Mindwave mindwave;
-
-    public boolean isStudyMode() {
-        return isStudyMode;
-    }
-
-    public void setStudyMode(boolean studyMode) {
-        isStudyMode = studyMode;
     }
 
 }
