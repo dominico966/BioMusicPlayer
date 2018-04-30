@@ -15,13 +15,13 @@ public class ListViewItemMindwaveState extends ListViewItem {
         this.mMindwave = mindwave;
     }
 
+    @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View view = super.getView();
+        if (view != null) return view;
 
-        if (view == null) {
-            view = inflater.inflate(getLayoutId(), parent, false);
-            super.setView(view);
-        }
+        view = inflater.inflate(getLayoutId(), parent, false);
+        super.setView(view);
 
         // 선언
         final ImageView[] imgViews = {

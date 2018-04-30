@@ -1,12 +1,14 @@
 package com.ljy.musicplayer.biomusicplayer;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Created by wjddp on 2018-03-29.
  */
 
-public class ListViewItem {
+public abstract class ListViewItem {
 
     private int layoutId;
     private int type;
@@ -34,6 +36,7 @@ public class ListViewItem {
 
     public View getView() {
         return view;
-
     }
+
+    abstract public View getView(LayoutInflater inflater, ViewGroup parent);
 }

@@ -7,7 +7,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Toast;
 
 import com.dominic.skuface.FaceApi;
 
@@ -17,7 +19,7 @@ import java.util.ArrayList;
  * Created by wjddp on 2018-03-29.
  */
 
-public class ListViewAdapter extends BaseAdapter {
+public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
     private static final int ITEM_VIEW_TYPE_MODE = 0;
     private static final int ITEM_VIEW_TYPE_SONG = 1;
@@ -53,45 +55,18 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int i) {
-        return i;
+        return selectItemListByMode().get(i).hashCode();
     }
 
     @Override
     public View getView(int pos, View view, ViewGroup parent) {
         final Context context = parent.getContext();
-        int viewType = getItemViewType(pos);
 
         Log.d("pwy", "getView called " + pos);
-
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         ListViewItem listViewItem = selectItemListByMode().get(pos);
+        view = listViewItem.getView(inflater,parent);
 
-        switch (viewType) {
-            case ITEM_VIEW_TYPE_MODE: {
-                ListViewItemMode item = (ListViewItemMode) listViewItem;
-                view = item.getView(inflater, parent);
-            }
-            break;
-
-            case ITEM_VIEW_TYPE_MINDWAVE_STATE: {
-                ListViewItemMindwaveState item = (ListViewItemMindwaveState) listViewItem;
-                view = item.getView(inflater, parent);
-            }
-            break;
-
-            case ITEM_VIEW_TYPE_NORMAL: {
-                ListViewItemFaceEmotion item = (ListViewItemFaceEmotion) listViewItem;
-                view = item.getView(inflater, parent);
-            }
-            break;
-
-            case ITEM_VIEW_TYPE_SONG: {
-                ListViewItemSong item = (ListViewItemSong) listViewItem;
-                view = item.getView(inflater, parent);
-            }
-            break;
-        }
         return view;
     }
 
@@ -104,7 +79,7 @@ public class ListViewAdapter extends BaseAdapter {
         ListViewItemMode item = new ListViewItemMode();
 
         item.setType(ITEM_VIEW_TYPE_MODE);
-        item.setLayoutId(R.layout.listview_item1);
+        item.setLayoutId(R.layout.listview_item_mode);
         item.setModeName(modeName);
         item.setModeState(modeState);
         item.setOnToggleButtonClick(toggleButtonEvent);
@@ -152,4 +127,14 @@ public class ListViewAdapter extends BaseAdapter {
         }
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        ListViewItem item = selectItemListByMode().get(i);
+
+        if (item instanceof ListViewItemSong) {
+            BioMusicPlayerApplication.getInstance().getServiceInterface().play(ListViewItemSong.songList.indexOf(item)); // 선택한 오디오재생
+            Toast.makeText(view.getContext(), ListViewItemSong.songList.indexOf(item) + " " + ((ListViewItemSong) item).getMusicName(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }

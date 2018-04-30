@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -60,13 +61,13 @@ public class ListViewItemSong extends ListViewItem {
         this.singerName = singerName;
     }
 
-    public View getView(LayoutInflater inflater, ViewGroup parent) {
+    @Override
+    public View getView(final LayoutInflater inflater, ViewGroup parent) {
         View view = super.getView();
+        if (view != null) return view;
 
-        if (view == null) {
-            view = inflater.inflate(getLayoutId(), parent, false);
-            super.setView(view);
-        }
+        view = inflater.inflate(getLayoutId(), parent, false);
+        super.setView(view);
 
         //선언
         ImageView musicImg = view.findViewById(R.id.img_music_album);
@@ -84,13 +85,20 @@ public class ListViewItemSong extends ListViewItem {
         musicSinger.setEllipsize(TextUtils.TruncateAt.END);
         musicSinger.setSingleLine(true);
 
-        view.setOnClickListener(new View.OnClickListener() {
+        onClickListener = new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 BioMusicPlayerApplication.getInstance().getServiceInterface().play(songList.indexOf(ListViewItemSong.this)); // 선택한 오디오재생
+                Toast.makeText(inflater.getContext(), songList.indexOf(ListViewItemSong.this)+" "+getMusicName(), Toast.LENGTH_SHORT).show();
             }
-        });
+        };
 
         return view;
+    }
+
+    private View.OnClickListener onClickListener;
+
+    public View.OnClickListener getOnClickListener() {
+        return onClickListener;
     }
 }

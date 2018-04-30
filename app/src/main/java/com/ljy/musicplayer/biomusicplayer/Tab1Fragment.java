@@ -91,6 +91,7 @@ public class Tab1Fragment extends Fragment {
 
         //리스트뷰 Adapter
         listView.setAdapter(listViewAdapter);
+        listView.setOnItemClickListener(listViewAdapter);
 
         listViewAdapter.addItemMode("Study Mode", app.isStudyMode(), listViewItemModeToggleButtonEvent);
         listViewAdapter.addItemMindwaveState(mMindwave);

@@ -15,12 +15,12 @@ import java.util.ArrayList;
  */
 
 public class AudioService extends Service {
-    private final IBinder mBinder = new AudioServiceBinder();
-    private ArrayList<ListViewItemSong> mAudioIds = new ArrayList<>();
-    private MediaPlayer mMediaPlayer;
     private boolean isPrepared;
     private int mCurrentPosition;
+    private MediaPlayer mMediaPlayer;
     private ListViewItemSong mAudioItem;
+    private final IBinder mBinder = new AudioServiceBinder();
+    private ArrayList<ListViewItemSong> mAudioIds = new ArrayList<>();
 
     public class AudioServiceBinder extends Binder {
         AudioService getService() {
@@ -93,11 +93,13 @@ public class AudioService extends Service {
             e.printStackTrace();
         }
     }
+
     //Stop
     private void stop() {
         mMediaPlayer.stop();
         mMediaPlayer.reset();
     }
+
     // Play list setting
     public void setPlayList(ArrayList<ListViewItemSong> audioIds) {
         if (!mAudioIds.equals(audioIds)) {
@@ -108,10 +110,11 @@ public class AudioService extends Service {
 
     public void play(int position) {
         mCurrentPosition = position;
-        mAudioItem = ListViewItemSong.songList.get(position);
+        mAudioItem = ListViewItemSong.songList.get(mCurrentPosition);
         stop();
         prepare();
     }
+
     //Play
     public void play() {
         if (isPrepared) {
@@ -119,6 +122,7 @@ public class AudioService extends Service {
             sendBroadcast(new Intent(BroadcastActions.PLAY_STATE_CHANGED)); // 재생상태 변경 전송
         }
     }
+
     //Pause
     public void pause() {
         if (isPrepared) {
@@ -126,6 +130,7 @@ public class AudioService extends Service {
             sendBroadcast(new Intent(BroadcastActions.PLAY_STATE_CHANGED)); // 재생상태 변경 전송
         }
     }
+
     //forward 다음 곡 재생
     public void forward() {
         if (mAudioIds.size() - 1 > mCurrentPosition) {
@@ -136,6 +141,7 @@ public class AudioService extends Service {
         play(mCurrentPosition);
         sendBroadcast(new Intent(BroadcastActions.PLAY_STATE_CHANGED)); // 재생상태 변경 전송
     }
+
     //rewind 이전 곡 재생
     public void rewind() {
         if (mCurrentPosition > 0) {
