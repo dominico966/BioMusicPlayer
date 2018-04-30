@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.listview;
 
 import android.view.LayoutInflater;
 import android.view.View;

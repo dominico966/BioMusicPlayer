@@ -1,10 +1,13 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.listview.tab1;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.ljy.musicplayer.biomusicplayer.Mindwave;
+import com.ljy.musicplayer.biomusicplayer.R;
+import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
 import com.neurosky.AlgoSdk.NskAlgoSdk;
 import com.neurosky.AlgoSdk.NskAlgoSignalQuality;
 

@@ -1,10 +1,13 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.listview.tab1;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import com.ljy.musicplayer.biomusicplayer.R;
+import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
 
 /**
  * Created by wjddp on 2018-03-29.

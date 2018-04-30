@@ -8,6 +8,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 
+import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
+
 import java.util.ArrayList;
 
 /**
@@ -151,6 +153,19 @@ public class AudioService extends Service {
         }
         play(mCurrentPosition);
         sendBroadcast(new Intent(BroadcastActions.PLAY_STATE_CHANGED)); // 재생상태 변경 전송
+    }
+
+    //seek
+    public void seek(int msec) {
+        mMediaPlayer.seekTo(msec);
+    }
+
+    public int getCurrentPlayTime() {
+        return mMediaPlayer.getCurrentPosition();
+    }
+
+    public int getDuration() {
+        return mMediaPlayer.getDuration();
     }
 
     // 진행 뮤직 아이템 반환

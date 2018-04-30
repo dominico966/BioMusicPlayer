@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.listview.tab1;
 
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -8,6 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
+import com.ljy.musicplayer.biomusicplayer.R;
+import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
 
 import java.util.ArrayList;
 

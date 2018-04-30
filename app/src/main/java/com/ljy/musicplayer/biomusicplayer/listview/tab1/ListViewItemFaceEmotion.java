@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.listview.tab1;
 
 import android.graphics.Bitmap;
 import android.support.constraint.solver.widgets.Rectangle;
@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dominic.skuface.FaceApi;
+import com.ljy.musicplayer.biomusicplayer.R;
+import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
 
 import java.lang.reflect.Field;
 

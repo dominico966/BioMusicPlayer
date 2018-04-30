@@ -4,6 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
+
 public class ListViewItemSuggest extends ListViewItem {
 
     private int image;

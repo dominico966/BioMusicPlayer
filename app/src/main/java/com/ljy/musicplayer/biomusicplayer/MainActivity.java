@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -16,7 +17,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -24,27 +24,36 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    // music setting 변수
-    private final static int LOADER_ID = 0x001;
-
-    private RecyclerView mRecyclerView;
-
     private ImageView mImgAlbumArt;
     private TextView mTxtTitle;
     private ImageButton mBtnPlayPause;
+    private SeekBar mSeekBar;
+
+    private Handler mHandler = new Handler();
+    Runnable seekbarDurationAnimationTask = new Runnable() {
+        @Override
+        public void run() {
+            int mCurrentPosition = BioMusicPlayerApplication.getInstance().getServiceInterface().getCurrentPlayTime();
+            mSeekBar.setProgress(mCurrentPosition);
+            mHandler.postDelayed(this, 1000);
+        }
+    };
 
     // voice record 변수
     Intent intent;
     SpeechRecognizer mRecognizer;
     Boolean isVoiceExecute = false;
-    private String voiceRead="";
+    private String voiceRead = "";
     private String audioEventString[] = {"다음", "이전", "정지", "재생"};
 
     @Override
@@ -73,18 +82,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mImgAlbumArt = findViewById(R.id.img_albumart);
         mTxtTitle = findViewById(R.id.txt_title);
         mBtnPlayPause = findViewById(R.id.btn_play_pause);
+        mSeekBar = findViewById(R.id.seekbar_music_duration);
 
-        mTxtTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-        mTxtTitle.setMarqueeRepeatLimit(-1);
-        mTxtTitle.setSingleLine(true);
-        mTxtTitle.setSelected(true);
-        mTxtTitle.requestFocus();
         // music Player 실행
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    BioMusicPlayerApplication.getInstance().getServiceInterface().seek(progress);
+                }
+
+                if(progress == seekBar.getMax()) {
+                    seekBar.setProgress(0);
+                }
+            }
+        });
+
         registerBroadcast();
         updateUI();
 
         //퍼미션
-        getPermissions(new String[] {
+        getPermissions(new String[]{
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE
         });
@@ -125,13 +154,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (BioMusicPlayerApplication.getInstance().getServiceInterface().isPlaying()) {
             mBtnPlayPause.setImageResource(R.drawable.pause);   //실행 중이면
+            mHandler.post(seekbarDurationAnimationTask);
+
+            mTxtTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            mTxtTitle.setMarqueeRepeatLimit(-1);
+            mTxtTitle.setSingleLine(true);
+            mTxtTitle.setSelected(true);
+            mTxtTitle.requestFocus();
         } else {
             mBtnPlayPause.setImageResource(R.drawable.play);    //중지 중이면
+            mHandler.removeCallbacks(seekbarDurationAnimationTask);
+
+            mTxtTitle.setSelected(false);
         }
         ListViewItemSong audioItem = BioMusicPlayerApplication.getInstance().getServiceInterface().getAudioItem();
         if (audioItem != null) {
             mImgAlbumArt.setImageDrawable(audioItem.getMusicImg());
             mTxtTitle.setText(audioItem.getMusicName());
+            mSeekBar.setMax(BioMusicPlayerApplication.getInstance().getServiceInterface().getDuration());
+            mHandler.post(seekbarDurationAnimationTask);
         } else {
             mImgAlbumArt.setImageResource(R.drawable.empty_albumart);
             mTxtTitle.setText("재생중인 음악이 없습니다.");
@@ -156,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // 보이스 icon 클릭 시
-        if(item.getItemId() == R.id.menu_voice_scan ) {
+        if (item.getItemId() == R.id.menu_voice_scan) {
             if (!isVoiceExecute) {
                 intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getPackageName());
@@ -170,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "음성인식 실행", Toast.LENGTH_SHORT).show();
                 mRecognizer.startListening(intent);     // 음성 읽기 시작.
             } else {
-                isVoiceExecute=false;
+                isVoiceExecute = false;
                 invalidateOptionsMenu();
                 Toast.makeText(this, "음성인식 취소", Toast.LENGTH_SHORT).show();
                 mRecognizer.stopListening();
@@ -258,21 +299,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         index = j;
                         isFind = true;
 
-                        switch (j){
-                            case 0 : //다음
+                        switch (j) {
+                            case 0: //다음
                                 BioMusicPlayerApplication.getInstance().getServiceInterface().forward();
-                                Toast.makeText(MainActivity.this, "다음노래 재생", Toast.LENGTH_SHORT).show();break;
-                            case 1 :    //이전
+                                Toast.makeText(MainActivity.this, "다음노래 재생", Toast.LENGTH_SHORT).show();
+                                break;
+                            case 1:    //이전
                                 BioMusicPlayerApplication.getInstance().getServiceInterface().rewind();
-                                Toast.makeText(MainActivity.this, "이전노래 재생", Toast.LENGTH_SHORT).show();break;
-                            case 2 :
+                                Toast.makeText(MainActivity.this, "이전노래 재생", Toast.LENGTH_SHORT).show();
+                                break;
+                            case 2:
                                 BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
-                                Toast.makeText(MainActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();break;
-                            case 3 :
+                                Toast.makeText(MainActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();
+                                break;
+                            case 3:
                                 BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
-                                Toast.makeText(MainActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();break;
+                                Toast.makeText(MainActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();
+                                break;
                             default:
-
 
 
                         }

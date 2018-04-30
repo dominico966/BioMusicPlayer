@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
+
 import java.util.ArrayList;
 
 //김준영 part
@@ -50,6 +52,12 @@ public class AudioServiceInterface {
         }
     }
 
+    public void seek(int msec) {
+        if (mService != null) {
+            mService.seek(msec);
+        }
+    }
+
     public void pause() {
         if (mService != null) {
             mService.play();
@@ -67,6 +75,7 @@ public class AudioServiceInterface {
             mService.rewind();
         }
     }
+
     public void togglePlay() {
         if (isPlaying()) {
             mService.pause();
@@ -87,6 +96,21 @@ public class AudioServiceInterface {
             return mService.getAudioItem();
         }
         return null;
+    }
+
+    public int getDuration() {
+        int i = -1;
+        if (mService != null) {
+            i = mService.getDuration();
+        }
+        return i;
+    }
+
+    public int getCurrentPlayTime() {
+        if (mService != null) {
+            return mService.getCurrentPlayTime();
+        }
+        return -1;
     }
 
 }

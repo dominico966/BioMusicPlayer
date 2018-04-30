@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.listview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,6 +12,13 @@ import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.dominic.skuface.FaceApi;
+import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
+import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemFaceEmotion;
+import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemMindwaveState;
+import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemMode;
+import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
+import com.ljy.musicplayer.biomusicplayer.Mindwave;
+import com.ljy.musicplayer.biomusicplayer.R;
 
 import java.util.ArrayList;
 
