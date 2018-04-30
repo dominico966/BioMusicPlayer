@@ -39,4 +39,11 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     // 우영 FaceAPI
     implementation 'com.github.dominico966:FaceAPITest:0.9.5'
+
+    // https://mvnrepository.com/artifact/com.mpatric/mp3agic
+    compile group: 'com.mpatric', name: 'mp3agic', version: '0.8.2'
+
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+
 }

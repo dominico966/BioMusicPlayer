@@ -10,7 +10,7 @@ public class ListViewItem {
 
     private int layoutId;
     private int type;
-    private View view;
+    private View view = null;
 
     public int getType() {
         return type;
