@@ -1,5 +1,6 @@
 package com.ljy.musicplayer.biomusicplayer.listview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -13,12 +14,11 @@ import android.widget.Toast;
 
 import com.dominic.skuface.FaceApi;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
+import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemFaceEmotion;
-import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemMindwaveState;
+import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemMindwaveEeg;
 import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemMode;
 import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
-import com.ljy.musicplayer.biomusicplayer.Mindwave;
-import com.ljy.musicplayer.biomusicplayer.R;
 
 import java.util.ArrayList;
 
@@ -111,15 +111,6 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         itemListStudy.add(item);
     }
 
-    public void addItemMindwaveState(Mindwave mindwave) {
-        ListViewItemMindwaveState item = new ListViewItemMindwaveState(mindwave);
-
-        item.setType(ITEM_VIEW_TYPE_MINDWAVE_STATE);
-        item.setLayoutId(R.layout.listview_item_mindwave_state);
-
-        itemListStudy.add(item);
-    }
-
     public void addItemFaceEmotion(Bitmap bitmap, FaceApi.Face face) {
         ListViewItemFaceEmotion item = new ListViewItemFaceEmotion(bitmap, face);
 
@@ -132,6 +123,16 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         } else {
             itemList.add(1, item);
         }
+    }
+
+    public ListViewItemMindwaveEeg addItemMindwaveEeg(Activity activity) {
+        ListViewItemMindwaveEeg item = new ListViewItemMindwaveEeg(activity);
+
+        item.setType(ITEM_VIEW_TYPE_MINDWAVE_STATE);
+        item.setLayoutId(R.layout.listview_item_mindwave_eeg_chart);
+
+        itemListStudy.add(item);
+        return item;
     }
 
     @Override

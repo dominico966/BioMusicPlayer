@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ImageView mImgAlbumArt;
     private TextView mTxtTitle;
+    private TextView mTxtCurrentPlayTime;
+    private TextView mTxtDuration;
     private ImageButton mBtnPlayPause;
     private SeekBar mSeekBar;
 
@@ -46,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int mCurrentPosition = BioMusicPlayerApplication.getInstance().getServiceInterface().getCurrentPlayTime();
             mSeekBar.setProgress(mCurrentPosition);
             mHandler.postDelayed(this, 1000);
+
+            int min = (mCurrentPosition / 1000) / 60;
+            int sec = (mCurrentPosition / 1000) % 60;
+            mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format),min,sec));
         }
     };
 
@@ -65,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setTitle("홍길동");
         getSupportActionBar().setBackgroundDrawable(getDrawable(R.drawable.bg_gradient));
 
-
         ViewPager viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabs);
 
@@ -81,10 +86,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //MiniPlayer 세팅
         mImgAlbumArt = findViewById(R.id.img_albumart);
         mTxtTitle = findViewById(R.id.txt_title);
+        mTxtCurrentPlayTime = findViewById(R.id.txt_music_current_playtime);
+        mTxtDuration = findViewById(R.id.txt_music_duration);
         mBtnPlayPause = findViewById(R.id.btn_play_pause);
         mSeekBar = findViewById(R.id.seekbar_music_duration);
 
         // music Player 실행
+        mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format),0,0));
+        mTxtDuration.setText(String.format(getString(R.string.time_format),0,0));
+
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -105,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if(progress == seekBar.getMax()) {
                     seekBar.setProgress(0);
+                    mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format),0,0));
                 }
             }
         });
@@ -161,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mTxtTitle.setSingleLine(true);
             mTxtTitle.setSelected(true);
             mTxtTitle.requestFocus();
+
         } else {
             mBtnPlayPause.setImageResource(R.drawable.play);    //중지 중이면
             mHandler.removeCallbacks(seekbarDurationAnimationTask);
@@ -171,7 +183,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (audioItem != null) {
             mImgAlbumArt.setImageDrawable(audioItem.getMusicImg());
             mTxtTitle.setText(audioItem.getMusicName());
-            mSeekBar.setMax(BioMusicPlayerApplication.getInstance().getServiceInterface().getDuration());
+
+            int duration = BioMusicPlayerApplication.getInstance().getServiceInterface().getDuration();
+            int min = (duration / 1000) / 60;
+            int sec = (duration / 1000) % 60;
+            mTxtDuration.setText(String.format(getString(R.string.time_format),min,sec));
+            mSeekBar.setMax(duration);
             mHandler.post(seekbarDurationAnimationTask);
         } else {
             mImgAlbumArt.setImageResource(R.drawable.empty_albumart);

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,7 +19,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,12 +29,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.dominic.skuface.FaceApi;
 import com.dominic.skuface.FaceDetectionCamera;
 import com.ljy.musicplayer.biomusicplayer.listview.ListViewAdapter;
+import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
@@ -53,9 +58,11 @@ public class Tab1Fragment extends Fragment {
 
     private BioMusicPlayerApplication app;
     private BluetoothAdapter mBluetoothAdapter;
-    private Mindwave mMindwave;
+
     private FaceApi faceApi;
     private FaceDetectionCamera faceDetectionCamera;
+
+    private Mindwave mMindwave;
 
     private ProgressDialog progressDialog;
 
@@ -71,6 +78,23 @@ public class Tab1Fragment extends Fragment {
 
         //Application 공통변수
         app = BioMusicPlayerApplication.getInstance();
+
+        listView = view.findViewById(R.id.listView);
+        listViewAdapter = new ListViewAdapter();
+
+        //리스트뷰 Adapter
+        listView.setAdapter(listViewAdapter);
+        listView.setOnItemClickListener(listViewAdapter);
+
+        listViewAdapter.addItemMode("Study Mode", app.isStudyMode(), listViewItemModeToggleButtonEvent);
+        initMindwave();
+
+        checkPermissionReadStorage(getActivity());
+
+        return view;
+    }
+
+    private void initMindwave() {
         mMindwave = new Mindwave(getActivity(),
                 BluetoothAdapter.getDefaultAdapter(),
                 new NskAlgoType[]{
@@ -84,22 +108,10 @@ public class Tab1Fragment extends Fragment {
 
             }
         };
+        listViewAdapter.addItemMindwaveEeg(getActivity());
+
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         app.setMindwave(mMindwave);
-
-        listView = view.findViewById(R.id.listView);
-        listViewAdapter = new ListViewAdapter();
-
-        //리스트뷰 Adapter
-        listView.setAdapter(listViewAdapter);
-        listView.setOnItemClickListener(listViewAdapter);
-
-        listViewAdapter.addItemMode("Study Mode", app.isStudyMode(), listViewItemModeToggleButtonEvent);
-        listViewAdapter.addItemMindwaveState(mMindwave);
-
-        checkPermissionReadStorage(getActivity());
-
-        return view;
     }
 
     public void checkPermissionReadStorage(Activity activity) {
@@ -165,7 +177,7 @@ public class Tab1Fragment extends Fragment {
 
                     if (tag.getTitle() != null) {
                         songName = new String(tag.getTitle().getBytes("ISO-8859-1"), "EUC-KR");
-                        if(songName.trim().equals("")) songName = fileName;
+                        if (songName.trim().equals("")) songName = fileName;
                     }
 
                     if (tag.getArtist() != null) {
@@ -180,7 +192,7 @@ public class Tab1Fragment extends Fragment {
 
                     if (tag.getTitle() != null) {
                         songName = new String(tag.getTitle().getBytes("ISO-8859-1"), "EUC-KR");
-                        if(songName.trim().equals("")) songName = fileName;
+                        if (songName.trim().equals("")) songName = fileName;
                     }
 
                     if (tag.getArtist() != null) {
@@ -209,81 +221,6 @@ public class Tab1Fragment extends Fragment {
             e.printStackTrace();
         }
     }
-
-    // 이 밑으로는 이벤트만 선언
-    private View.OnClickListener listViewItemModeToggleButtonEvent = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            ToggleButton toggleButton = (ToggleButton) view;
-
-            if (mBluetoothAdapter == null) {
-                // bluetooth error
-                Log.d("pwy BluetoothAdapter", "Bluetooth not available");
-            } else {
-                if (!mBluetoothAdapter.isEnabled()) {
-                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivity(intent);
-                    toggleButton.setChecked(false);
-                    return;
-                }
-            }
-            //공통변수 수정
-            app.setStudyMode(!app.isStudyMode());
-
-            //UI 수정
-            toggleButton.setChecked(app.isStudyMode());
-
-            //mindwave 초기화
-            if (progressDialog == null) progressDialog = new ProgressDialog(getActivity());
-            MindwaveController mc = new MindwaveController(getContext(), progressDialog, mMindwave);
-            if (!mMindwave.isMindwaveConnected() && toggleButton.isChecked()) {
-                mc.execute();
-            } else {
-                mMindwave.stop();
-            }
-
-            listViewAdapter.notifyDataSetChanged();
-
-            //로깅
-            Log.d("pwy " + app.getClass().getSimpleName() + ".isStudyMode()", app.isStudyMode() + "");
-            Log.d("pwy Toggle Button State", toggleButton.isChecked() + "");
-
-        }
-    };
-
-    // 이벤트
-    FaceApi.OnResponseListener onResponseListener = new FaceApi.OnResponseListener() {
-        @Override
-        public void onResponse(final Bitmap framedImage, final List<FaceApi.Face> faceList) {
-            Log.d("pwy", framedImage.toString());
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    progressDialog.dismiss();
-                    if (faceList.isEmpty()) return;
-
-                    listViewAdapter.addItemFaceEmotion(framedImage, faceList.get(faceList.size() - 1));
-                    listViewAdapter.notifyDataSetChanged();
-                }
-            });
-        }
-    };
-
-    // 카메라 초기화 및 안면인식 시 이벤트
-    FaceDetectionCamera.OnFaceDetectedListener faceDetectedListener = new FaceDetectionCamera.OnFaceDetectedListener() {
-        @Override
-        public void onFaceDetected(Bitmap capturedFace) {
-
-            //faceImage.setImageBitmap(capturedFace);
-            int width = capturedFace.getWidth();
-            int height = capturedFace.getHeight();
-
-            Bitmap resize = resizeBitmap(capturedFace, 600, 600 * height / width);
-            faceApi.clearFaceList();
-            faceApi.detectAndFrameRest(resize);
-            faceDetectionCamera.stopFaceDetection();
-        }
-    };
 
     public static Bitmap resizeBitmap(Bitmap src, float newWidth, float newHeight) {
         Matrix matrix = new Matrix();
@@ -367,4 +304,110 @@ public class Tab1Fragment extends Fragment {
         super.onDestroy();
         if (progressDialog != null) progressDialog.dismiss();
     }
+
+
+    // 이 밑으로는 이벤트만 선언
+    private View.OnClickListener listViewItemModeToggleButtonEvent = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ToggleButton toggleButton = (ToggleButton) view;
+
+            if (mBluetoothAdapter == null) {
+                // bluetooth error
+                Log.d("pwy BluetoothAdapter", "Bluetooth not available");
+            } else {
+                if (!mBluetoothAdapter.isEnabled()) {
+                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivity(intent);
+                    toggleButton.setChecked(false);
+                    return;
+                }
+            }
+            //공통변수 수정
+            app.setStudyMode(!app.isStudyMode());
+
+            //mindwave 초기화
+            if (progressDialog == null) progressDialog = new ProgressDialog(getActivity());
+
+            MindwaveController mc = new MindwaveController(getContext(), progressDialog, mMindwave);
+
+            if (!mMindwave.isMindwaveConnected() && toggleButton.isChecked()) {
+                mc.execute();
+            } else {
+                mMindwave.stop();
+            }
+
+            listViewAdapter.notifyDataSetChanged();
+
+            //로깅
+            Log.d("pwy " + app.getClass().getSimpleName() + ".isStudyMode()", app.isStudyMode() + "");
+            Log.d("pwy Toggle Button State", toggleButton.isChecked() + "");
+
+            toggleButton.setChecked(app.isStudyMode());
+
+
+            View listItemModeView = ((ListViewItem) listViewAdapter.getItem(0)).getView();
+            TextView txtModeName = listItemModeView.findViewById(R.id.txtModeName);
+            //UI 업데이트
+            if(app.isStudyMode()) {
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_gradient_purple));
+                getActivity().findViewById(R.id.player).setBackground(getResources().getDrawable(R.drawable.bg_gradient_purple));
+                getActivity().findViewById(R.id.tabs).setBackground(getResources().getDrawable(R.drawable.bg_gradient_purple));
+                txtModeName.setTextColor(Color.WHITE);
+                listItemModeView.setBackgroundColor(Color.parseColor("#404040"));
+            } else {
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_gradient));
+                getActivity().findViewById(R.id.player).setBackground(getResources().getDrawable(R.drawable.bg_gradient));
+                getActivity().findViewById(R.id.tabs).setBackground(getResources().getDrawable(R.drawable.bg_gradient));
+                txtModeName.setTextColor(Color.BLACK);
+
+                TypedValue a = new TypedValue();
+                getActivity().getTheme().resolveAttribute(android.R.attr.windowBackground, a, true);
+                if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                    // windowBackground is a color
+                    int color = a.data;
+                    listItemModeView.setBackgroundColor(color);
+                } else {
+                    // windowBackground is not a color, probably a drawable
+                    Drawable d = getActivity().getResources().getDrawable(a.resourceId);
+                    listItemModeView.setBackground(d);
+                }
+            }
+        }
+    };
+    // 이벤트
+
+    FaceApi.OnResponseListener onResponseListener = new FaceApi.OnResponseListener() {
+        @Override
+        public void onResponse(final Bitmap framedImage, final List<FaceApi.Face> faceList) {
+            Log.d("pwy", framedImage.toString());
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
+                    if (faceList.isEmpty()) return;
+
+                    listViewAdapter.addItemFaceEmotion(framedImage, faceList.get(faceList.size() - 1));
+                    listViewAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    };
+
+    // 카메라 초기화 및 안면인식 시 이벤트
+    FaceDetectionCamera.OnFaceDetectedListener faceDetectedListener = new FaceDetectionCamera.OnFaceDetectedListener() {
+        @Override
+        public void onFaceDetected(Bitmap capturedFace) {
+
+            //faceImage.setImageBitmap(capturedFace);
+            int width = capturedFace.getWidth();
+            int height = capturedFace.getHeight();
+
+            Bitmap resize = resizeBitmap(capturedFace, 600, 600 * height / width);
+            faceApi.clearFaceList();
+            faceApi.detectAndFrameRest(resize);
+            faceDetectionCamera.stopFaceDetection();
+        }
+    };
+
 }
