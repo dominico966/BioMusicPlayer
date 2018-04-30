@@ -1,30 +1,33 @@
 package com.ljy.musicplayer.biomusicplayer;
 
-
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,6 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mTxtTitle;
     private ImageButton mBtnPlayPause;
 
+    // voice record 변수
+    Intent intent;
+    SpeechRecognizer mRecognizer;
+    Boolean isVoiceExecute = false;
+    private String voiceRead="";
+    private String audioEventString[] = {"다음", "이전", "정지", "재생"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,15 +58,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         ViewPager viewPager = findViewById(R.id.viewPager);
-        TabLayout tabLayout =findViewById(R.id.tabs);
-
+        TabLayout tabLayout = findViewById(R.id.tabs);
 
         TabAdapter adapter = new TabAdapter(getSupportFragmentManager());
 
-
         //탭 추가
-        adapter.addFragment(new Tab1Fragment(),"Tab1");
-        adapter.addFragment(new Tab2Fragment(),"Tab2");
+        adapter.addFragment(new Tab1Fragment(), "Tab1");
+        adapter.addFragment(new Tab2Fragment(), "Tab2");
         viewPager.setAdapter(adapter);
 
         tabLayout.setupWithViewPager(viewPager);
@@ -74,15 +82,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // music Player 실행
         registerBroadcast();
         updateUI();
-    }
 
-    //
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        //퍼미션
+        getPermissions(new String[] {
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        });
 
-        }
+        // Record 장전
+        mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        mRecognizer.setRecognitionListener(new VoiceListener());
     }
 
     /*브로드캐스트 리시버*/
@@ -127,9 +136,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mImgAlbumArt.setImageResource(R.drawable.empty_albumart);
             mTxtTitle.setText("재생중인 음악이 없습니다.");
         }
-
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // 보이스 icon 클릭 시
+        if(item.getItemId() == R.id.menu_voice_scan ) {
+            if (!isVoiceExecute) {
+                intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getPackageName());
+                Log.d("package", getPackageName() + "");
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 10);
+
+                isVoiceExecute = true;
+                invalidateOptionsMenu();
+
+                Toast.makeText(this, "음성인식 실행", Toast.LENGTH_SHORT).show();
+                mRecognizer.startListening(intent);     // 음성 읽기 시작.
+            } else {
+                isVoiceExecute=false;
+                invalidateOptionsMenu();
+                Toast.makeText(this, "음성인식 취소", Toast.LENGTH_SHORT).show();
+                mRecognizer.stopListening();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterBroadcast();
@@ -156,4 +206,113 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
+    // Voice 읽고나서 어떤 이벤트 할거니
+    class VoiceListener implements RecognitionListener {
+
+        @Override
+        public void onReadyForSpeech(Bundle bundle) {
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+        }
+
+        @Override
+        public void onRmsChanged(float v) {
+        }
+
+        @Override
+        public void onBufferReceived(byte[] bytes) {
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+        }
+
+        @Override
+        public void onError(int i) {
+        }
+
+        @Override
+        public void onResults(Bundle bundle) {
+
+            Log.d("in", "result result");
+            ArrayList<String> matches =
+                    bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+            voiceRead = matches.get(0);
+
+            Log.d("eee", matches.size() + "");
+
+
+            String getVoice = "";
+            boolean isFind = false;
+            int index = 0;
+
+            // 오디오 이벤트 중 하나가 나오면
+            for (int i = 0; i < matches.size(); i++) {
+                for (int j = 0; j < audioEventString.length; j++) {
+                    Log.d("log", " i : " + i + "j" + j);
+                    if (audioEventString[j].equals(matches.get(i))) {
+                        index = j;
+                        isFind = true;
+
+                        switch (j){
+                            case 0 : //다음
+                                BioMusicPlayerApplication.getInstance().getServiceInterface().forward();
+                                Toast.makeText(MainActivity.this, "다음노래 재생", Toast.LENGTH_SHORT).show();break;
+                            case 1 :    //이전
+                                BioMusicPlayerApplication.getInstance().getServiceInterface().rewind();
+                                Toast.makeText(MainActivity.this, "이전노래 재생", Toast.LENGTH_SHORT).show();break;
+                            case 2 :
+                                BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
+                                Toast.makeText(MainActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();break;
+                            case 3 :
+                                BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
+                                Toast.makeText(MainActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();break;
+                            default:
+
+
+
+                        }
+                        break;
+                    }
+                }
+                if (isFind) {
+                    break;
+                }
+            }
+
+            if (!isFind) {
+                Toast.makeText(MainActivity.this, "해당 명령어는 유효하지 않습니다 : " + matches.get(0), Toast.LENGTH_SHORT).show();
+
+            } else
+
+
+                isVoiceExecute = false;
+            invalidateOptionsMenu();
+        }
+
+        @Override
+        public void onPartialResults(Bundle bundle) {
+        }
+
+        @Override
+        public void onEvent(int i, Bundle bundle) {
+        }
+    }
+
+    public void getPermissions(String[] permissions) {
+        if (ContextCompat.checkSelfPermission(
+                MainActivity.this,
+                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                    MainActivity.this,
+                    permissions,
+                    0);
+        }
+    }
+
 }
