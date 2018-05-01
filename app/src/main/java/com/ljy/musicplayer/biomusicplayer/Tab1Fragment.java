@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -37,15 +38,9 @@ import com.dominic.skuface.FaceApi;
 import com.dominic.skuface.FaceDetectionCamera;
 import com.ljy.musicplayer.biomusicplayer.listview.ListViewAdapter;
 import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
-import com.mpatric.mp3agic.ID3v1;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
 import com.neurosky.AlgoSdk.NskAlgoType;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public class Tab1Fragment extends Fragment {
@@ -156,69 +151,33 @@ public class Tab1Fragment extends Fragment {
 
         Drawable defaultImage = getResources().getDrawable(R.drawable.empty_albumart);
         Bitmap drawableToBitmap = ((BitmapDrawable) defaultImage).getBitmap();
-        BitmapDrawable resize = new BitmapDrawable(getResources(), resizeBitmap(drawableToBitmap, 256, 256 * drawableToBitmap.getHeight() / drawableToBitmap.getWidth()));
+        BitmapDrawable resize = new BitmapDrawable(getResources(), resizeBitmap(drawableToBitmap, 128, 128 * drawableToBitmap.getHeight() / drawableToBitmap.getWidth()));
 
-        try {
-            for (File f : list) {
-                Mp3File mp3File = new Mp3File(f.getAbsolutePath());
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
-                String fileName = f.getName().split(".mp3")[0];
-                String songName = fileName;
-                String singerName = "";
-                String filePath = f.getAbsolutePath();
+        for (File f : list) {
+            BitmapDrawable cover = resize;
+            mmr.setDataSource(f.getPath());
 
-                Log.d("pwy title", songName);
-
-                //listViewAdapter.addItemSong(resize, songName, singerName, filePath);
-
-
-                if (mp3File.hasId3v1Tag()) {
-                    ID3v1 tag = mp3File.getId3v1Tag();
-
-                    if (tag.getTitle() != null) {
-                        songName = new String(tag.getTitle().getBytes("ISO-8859-1"), "EUC-KR");
-                        if (songName.trim().equals("")) songName = fileName;
-                    }
-
-                    if (tag.getArtist() != null) {
-                        singerName = new String(tag.getArtist().getBytes("ISO-8859-1"), "EUC-KR");
-                    }
-
-                    listViewAdapter.addItemSong(resize, songName, singerName, filePath);
-
-                } else if (mp3File.hasId3v2Tag()) {
-                    ID3v2 tag = mp3File.getId3v2Tag();
-                    byte[] imageData = tag.getAlbumImage();
-
-                    if (tag.getTitle() != null) {
-                        songName = new String(tag.getTitle().getBytes("ISO-8859-1"), "EUC-KR");
-                        if (songName.trim().equals("")) songName = fileName;
-                    }
-
-                    if (tag.getArtist() != null) {
-                        singerName = new String(tag.getArtist().getBytes("ISO-8859-1"), "EUC-KR");
-                    }
-
-                    BitmapDrawable bd = resize;
-                    if (imageData != null) {
-                        Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length - 1);
-                        Bitmap resizeBitmap = resizeBitmap(imageBitmap, 256, 256 * drawableToBitmap.getHeight() / drawableToBitmap.getWidth());
-                        imageBitmap.recycle();
-
-                        bd = new BitmapDrawable(getResources(), resizeBitmap);
-                    }
-
-                    listViewAdapter.addItemSong(bd, songName, singerName, filePath);
-
-                } else {
-                    listViewAdapter.addItemSong(resize, songName, singerName, filePath);
-                }
+            // 이미지
+            byte[] data = mmr.getEmbeddedPicture();
+            if (data != null) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                Bitmap resizeBitmap = resizeBitmap(bitmap, 128, 128);
+                cover = new BitmapDrawable(getResources(), resizeBitmap);
+                bitmap.recycle();
             }
 
-            listViewAdapter.notifyDataSetChanged();
+            // 문자열 데이터
+            String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
 
-        } catch (IOException | UnsupportedTagException | InvalidDataException e) {
-            e.printStackTrace();
+            if (title == null) title = f.getName().split("mp3")[0];
+            if (artist == null) artist = "";
+
+            listViewAdapter.addItemSong(cover, title, artist, Long.parseLong(duration), f.getPath());
+            listViewAdapter.notifyDataSetChanged();
         }
     }
 
@@ -349,14 +308,14 @@ public class Tab1Fragment extends Fragment {
             View listItemModeView = ((ListViewItem) listViewAdapter.getItem(0)).getView();
             TextView txtModeName = listItemModeView.findViewById(R.id.txtModeName);
             //UI 업데이트
-            if(app.isStudyMode()) {
-                ((AppCompatActivity)getActivity()).getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_gradient_purple));
+            if (app.isStudyMode()) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_gradient_purple));
                 getActivity().findViewById(R.id.player).setBackground(getResources().getDrawable(R.drawable.bg_gradient_purple));
                 getActivity().findViewById(R.id.tabs).setBackground(getResources().getDrawable(R.drawable.bg_gradient_purple));
                 txtModeName.setTextColor(Color.WHITE);
                 listItemModeView.setBackgroundColor(Color.parseColor("#404040"));
             } else {
-                ((AppCompatActivity)getActivity()).getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_gradient));
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_gradient));
                 getActivity().findViewById(R.id.player).setBackground(getResources().getDrawable(R.drawable.bg_gradient));
                 getActivity().findViewById(R.id.tabs).setBackground(getResources().getDrawable(R.drawable.bg_gradient));
                 txtModeName.setTextColor(Color.BLACK);

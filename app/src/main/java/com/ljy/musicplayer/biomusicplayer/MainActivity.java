@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             int min = (mCurrentPosition / 1000) / 60;
             int sec = (mCurrentPosition / 1000) % 60;
-            mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format),min,sec));
+            mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format), min, sec));
         }
     };
 
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Boolean isVoiceExecute = false;
     private String voiceRead = "";
     private String audioEventString[] = {"다음", "이전", "정지", "재생"};
+    private static final int REQUEST_PERMISSIONS = 1234;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSeekBar = findViewById(R.id.seekbar_music_duration);
 
         // music Player 실행
-        mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format),0,0));
-        mTxtDuration.setText(String.format(getString(R.string.time_format),0,0));
+        mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format), 0, 0));
+        mTxtDuration.setText(String.format(getString(R.string.time_format), 0, 0));
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -113,9 +114,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     BioMusicPlayerApplication.getInstance().getServiceInterface().seek(progress);
                 }
 
-                if(progress == seekBar.getMax()) {
+                if (progress == seekBar.getMax()) {
                     seekBar.setProgress(0);
-                    mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format),0,0));
+                    mTxtCurrentPlayTime.setText(String.format(getString(R.string.time_format), 0, 0));
                 }
             }
         });
@@ -187,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int duration = BioMusicPlayerApplication.getInstance().getServiceInterface().getDuration();
             int min = (duration / 1000) / 60;
             int sec = (duration / 1000) % 60;
-            mTxtDuration.setText(String.format(getString(R.string.time_format),min,sec));
+            mTxtDuration.setText(String.format(getString(R.string.time_format), min, sec));
             mSeekBar.setMax(duration);
             mHandler.post(seekbarDurationAnimationTask);
         } else {
@@ -199,8 +200,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        switch (requestCode) {
+            case REQUEST_PERMISSIONS: {
+                //permission to read storage
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+                } else {
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
     }
 
@@ -372,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ActivityCompat.requestPermissions(
                     MainActivity.this,
                     permissions,
-                    0);
+                    REQUEST_PERMISSIONS);
         }
     }
 

@@ -111,6 +111,7 @@ public class AudioService extends Service {
     }
 
     public void play(int position) {
+        if(position < 0) position = 0;
         mCurrentPosition = position;
         mAudioItem = ListViewItemSong.songList.get(mCurrentPosition);
         stop();

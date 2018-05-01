@@ -95,14 +95,15 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         itemListStudy.add(item);
     }
 
-    public void addItemSong(Drawable musicImg, String musicName, String singerName, String filePath) {
+    public void addItemSong(Drawable musicImg, String title, String artist, long duration, String filePath) {
         ListViewItemSong item = new ListViewItemSong();
 
         item.setType(ITEM_VIEW_TYPE_SONG);
         item.setLayoutId(R.layout.listview_item_song);
         item.setMusicImg(musicImg);
-        item.setMusicName(musicName);
-        item.setSingerName(singerName);
+        item.setMusicName(title);
+        item.setDuration(duration);
+        item.setSingerName(artist);
         item.setFilePath(filePath);
 
         ListViewItemSong.songList.add(item);
