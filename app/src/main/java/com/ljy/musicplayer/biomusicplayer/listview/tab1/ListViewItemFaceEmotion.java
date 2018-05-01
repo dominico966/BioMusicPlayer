@@ -2,7 +2,6 @@ package com.ljy.musicplayer.biomusicplayer.listview.tab1;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.constraint.solver.widgets.Rectangle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,19 +41,8 @@ public class ListViewItemFaceEmotion extends ListViewItem {
 
         Log.d("pwy", face.getEmotion().neutral + "");
 
-        Rectangle r = face.getFaceRectangle();
-
-        Log.d("pwy.rectangle", face.getFaceRectangle().x + "");
-
-        Bitmap cut = Bitmap.createBitmap(
-                bitmap,
-                r.x - 50 <= 0 ? 0 : r.x - 50,
-                r.y - 50 <= 0 ? 0 : r.y - 50,
-                r.x + r.width + 100 >= bitmap.getWidth() ? bitmap.getWidth() - r.x : r.width + 100,
-                r.y + r.height + 100 >= bitmap.getHeight() ? bitmap.getHeight() - r.y : r.height + 100);
-
         //detectAndFrame 이후의 Bitmap
-        faceImage.setImageBitmap(cut);
+        faceImage.setImageBitmap(bitmap);
 
         LinearLayout linearLayout = view.findViewById(R.id.face_info);
 

@@ -41,9 +41,9 @@
             android:layout_marginStart="-10dp" />
 
         <LinearLayout
-            android:layout_marginTop="-6dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-6dp">
 
             <TextView
                 android:id="@+id/txt_music_current_playtime"
@@ -92,7 +92,9 @@
                 android:id="@+id/btn_rewind"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:background="@android:color/transparent"
                 android:onClick="onClick"
+                android:padding="5dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/rewind" />
 
@@ -100,14 +102,18 @@
                 android:id="@+id/btn_play_pause"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:background="@android:color/transparent"
                 android:onClick="onClick"
+                android:padding="5dp"
                 android:scaleType="fitXY" />
 
             <ImageButton
                 android:id="@+id/btn_forward"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:background="@android:color/transparent"
                 android:onClick="onClick"
+                android:padding="5dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/forward" />
         </LinearLayout>

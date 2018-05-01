@@ -17,9 +17,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -346,8 +348,24 @@ public class Tab1Fragment extends Fragment {
                     progressDialog.dismiss();
                     if (faceList.isEmpty()) return;
 
-                    listViewAdapter.addItemFaceEmotion(framedImage, faceList.get(faceList.size() - 1));
+                    // 비트맵 자르기
+                    Rectangle r = faceList.get(faceList.size()-1).getFaceRectangle();
+                    Bitmap cut = Bitmap.createBitmap(
+                            framedImage,
+                            r.x - 50 <= 0 ? 0 : r.x - 50,
+                            r.y - 50 <= 0 ? 0 : r.y - 50,
+                            r.x + r.width + 100 >= framedImage.getWidth() ? framedImage.getWidth() - r.x : r.width + 100,
+                            r.y + r.height + 100 >= framedImage.getHeight() ? framedImage.getHeight() - r.y : r.height + 100);
+
+                    listViewAdapter.addItemFaceEmotion(cut, faceList.get(faceList.size() - 1));
                     listViewAdapter.notifyDataSetChanged();
+
+                    ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                    BitmapDrawable bd = new BitmapDrawable(getResources(),resizeBitmap(cut,120,120));
+
+                    actionBar.setIcon(bd);
+                    actionBar.setDisplayShowHomeEnabled(true);
+                    actionBar.setDisplayUseLogoEnabled(true);
                 }
             });
         }
