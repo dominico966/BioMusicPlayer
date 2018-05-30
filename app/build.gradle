@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.ljy.musicplayer.biomusicplayer"
         minSdkVersion 21
@@ -25,17 +25,21 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
+
+    implementation 'com.android.support:design:27.1.0'
     // 그래프 API
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     // 우영 FaceAPI
     implementation 'com.github.dominico966:FaceAPITest:0.9.6.2'
-    compile 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.0'
+
+    // login API
+    implementation 'com.github.shortleader:biologin:0.0.3'
 }
