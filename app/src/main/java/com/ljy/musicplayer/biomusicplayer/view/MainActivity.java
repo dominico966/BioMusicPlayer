@@ -41,6 +41,9 @@ import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.presenter.TabAdapter;
 import com.ljy.musicplayer.biomusicplayer.model.AudioService;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
+import com.ljy.musicplayer.biomusicplayer.view.Tab1Fragment;
+import com.ljy.musicplayer.biomusicplayer.view.Tab2Fragment;
 
 import java.util.ArrayList;
 

@@ -1,12 +1,12 @@
 package com.ljy.musicplayer.biomusicplayer;
 
+import android.app.Activity;
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Environment;
 import android.util.Log;
 
-import com.dominic.skuface.FaceApi;
 import com.ljy.musicplayer.biomusicplayer.model.Mindwave;
 import com.ljy.musicplayer.biomusicplayer.presenter.AudioServiceInterface;
 
