@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.model;
 
 import android.app.Service;
 import android.content.Intent;
@@ -8,7 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 
-import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
 
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ public class AudioService extends Service {
     private ArrayList<ListViewItemSong> mAudioIds = new ArrayList<>();
 
     public class AudioServiceBinder extends Binder {
-        AudioService getService() {
+        public AudioService getService() {
             return AudioService.this;
         }
     }

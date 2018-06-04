@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer.listview.tab1;
+package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -18,9 +18,9 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
-import com.ljy.musicplayer.biomusicplayer.Mindwave;
 import com.ljy.musicplayer.biomusicplayer.R;
-import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
+import com.ljy.musicplayer.biomusicplayer.model.ListViewItem;
+import com.ljy.musicplayer.biomusicplayer.model.Mindwave;
 import com.neurosky.AlgoSdk.NskAlgoSdk;
 import com.neurosky.AlgoSdk.NskAlgoSignalQuality;
 

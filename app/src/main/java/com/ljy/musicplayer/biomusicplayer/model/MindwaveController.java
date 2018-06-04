@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.model;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;

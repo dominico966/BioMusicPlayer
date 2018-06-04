@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer.listview.tab1;
+package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -12,13 +12,14 @@ import android.widget.TextView;
 
 import com.dominic.skuface.FaceApi;
 import com.ljy.musicplayer.biomusicplayer.R;
-import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
+import com.ljy.musicplayer.biomusicplayer.model.ListViewItem;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ListViewItemFaceEmotion extends ListViewItem {
+
     private Bitmap bitmap;
     private FaceApi.Face face;
 

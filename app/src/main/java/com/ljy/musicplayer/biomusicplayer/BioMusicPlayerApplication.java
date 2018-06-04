@@ -4,6 +4,9 @@ import android.app.Application;
 import android.os.Environment;
 import android.util.Log;
 
+import com.ljy.musicplayer.biomusicplayer.model.Mindwave;
+import com.ljy.musicplayer.biomusicplayer.presenter.AudioServiceInterface;
+
 import java.io.File;
 
 public class BioMusicPlayerApplication extends Application {

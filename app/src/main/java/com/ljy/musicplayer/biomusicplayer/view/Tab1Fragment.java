@@ -1,14 +1,12 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -24,7 +22,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,14 +29,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.dominic.skuface.FaceApi;
 import com.dominic.skuface.FaceDetectionCamera;
-import com.ljy.musicplayer.biomusicplayer.listview.ListViewAdapter;
-import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
+import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
+import com.ljy.musicplayer.biomusicplayer.R;
+import com.ljy.musicplayer.biomusicplayer.model.FaceCaptureController;
+import com.ljy.musicplayer.biomusicplayer.model.Mindwave;
+import com.ljy.musicplayer.biomusicplayer.presenter.ListViewAdapter;
+import com.ljy.musicplayer.biomusicplayer.presenter.ListViewItemModePresenter;
 import com.neurosky.AlgoSdk.NskAlgoType;
 
 import java.io.File;
@@ -63,6 +62,8 @@ public class Tab1Fragment extends Fragment {
 
     private ProgressDialog progressDialog;
 
+    private ListViewItemModePresenter listViewItemModePresenter;
+
     public Tab1Fragment() {
     }
 
@@ -76,6 +77,10 @@ public class Tab1Fragment extends Fragment {
         //Application 공통변수
         app = BioMusicPlayerApplication.getInstance();
 
+        initMindwave();
+        checkPermissionReadStorage(getActivity());
+
+        //리스트뷰 작업
         listView = view.findViewById(R.id.listView);
         listViewAdapter = new ListViewAdapter();
 
@@ -83,10 +88,11 @@ public class Tab1Fragment extends Fragment {
         listView.setAdapter(listViewAdapter);
         listView.setOnItemClickListener(listViewAdapter);
 
-        listViewAdapter.addItemMode("Study Mode", app.isStudyMode(), listViewItemModeToggleButtonEvent);
-        initMindwave();
+        ListViewItemMode listViewItemMode = listViewAdapter.addItemMode("Study Mode", app.isStudyMode());
+        ListViewItemMindwaveEeg listViewItemMindwaveEeg = listViewAdapter.addItemMindwaveEeg(getActivity());
 
-        checkPermissionReadStorage(getActivity());
+        //리스트뷰 Presenter
+        listViewItemModePresenter = new ListViewItemModePresenter(listViewAdapter,listViewItemMode,this);
 
         return view;
     }
@@ -105,7 +111,6 @@ public class Tab1Fragment extends Fragment {
 
             }
         };
-        listViewAdapter.addItemMindwaveEeg(getActivity());
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         app.setMindwave(mMindwave);
@@ -266,78 +271,7 @@ public class Tab1Fragment extends Fragment {
         if (progressDialog != null) progressDialog.dismiss();
     }
 
-
     // 이 밑으로는 이벤트만 선언
-    private View.OnClickListener listViewItemModeToggleButtonEvent = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            ToggleButton toggleButton = (ToggleButton) view;
-
-            if (mBluetoothAdapter == null) {
-                // bluetooth error
-                Log.d("pwy BluetoothAdapter", "Bluetooth not available");
-            } else {
-                if (!mBluetoothAdapter.isEnabled()) {
-                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivity(intent);
-                    toggleButton.setChecked(false);
-                    return;
-                }
-            }
-            //공통변수 수정
-            app.setStudyMode(!app.isStudyMode());
-
-            //mindwave 초기화
-            if (progressDialog == null) progressDialog = new ProgressDialog(getActivity());
-
-            MindwaveController mc = new MindwaveController(getContext(), progressDialog, mMindwave);
-
-            if (!mMindwave.isMindwaveConnected() && toggleButton.isChecked()) {
-                mc.execute();
-            } else {
-                mMindwave.stop();
-            }
-
-            listViewAdapter.notifyDataSetChanged();
-
-            //로깅
-            Log.d("pwy " + app.getClass().getSimpleName() + ".isStudyMode()", app.isStudyMode() + "");
-            Log.d("pwy Toggle Button State", toggleButton.isChecked() + "");
-
-            toggleButton.setChecked(app.isStudyMode());
-
-
-            View listItemModeView = ((ListViewItem) listViewAdapter.getItem(0)).getView();
-            TextView txtModeName = listItemModeView.findViewById(R.id.txtModeName);
-            //UI 업데이트
-            if (app.isStudyMode()) {
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_gradient_purple));
-                getActivity().findViewById(R.id.player).setBackground(getResources().getDrawable(R.drawable.bg_gradient_purple));
-                getActivity().findViewById(R.id.tabs).setBackground(getResources().getDrawable(R.drawable.bg_gradient_purple));
-                txtModeName.setTextColor(Color.WHITE);
-                listItemModeView.setBackgroundColor(Color.parseColor("#404040"));
-            } else {
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_gradient));
-                getActivity().findViewById(R.id.player).setBackground(getResources().getDrawable(R.drawable.bg_gradient));
-                getActivity().findViewById(R.id.tabs).setBackground(getResources().getDrawable(R.drawable.bg_gradient));
-                txtModeName.setTextColor(Color.BLACK);
-
-                TypedValue a = new TypedValue();
-                getActivity().getTheme().resolveAttribute(android.R.attr.windowBackground, a, true);
-                if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-                    // windowBackground is a color
-                    int color = a.data;
-                    listItemModeView.setBackgroundColor(color);
-                } else {
-                    // windowBackground is not a color, probably a drawable
-                    Drawable d = getActivity().getResources().getDrawable(a.resourceId);
-                    listItemModeView.setBackground(d);
-                }
-            }
-        }
-    };
-    // 이벤트
-
     FaceApi.OnResponseListener onResponseListener = new FaceApi.OnResponseListener() {
         @Override
         public void onResponse(final Bitmap framedImage, final List<FaceApi.Face> faceList) {

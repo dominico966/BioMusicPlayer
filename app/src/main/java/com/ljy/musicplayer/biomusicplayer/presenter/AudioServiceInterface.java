@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.presenter;
 
 
 import android.content.ComponentName;
@@ -7,7 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
+import com.ljy.musicplayer.biomusicplayer.model.AudioService;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
 
 import java.util.ArrayList;
 

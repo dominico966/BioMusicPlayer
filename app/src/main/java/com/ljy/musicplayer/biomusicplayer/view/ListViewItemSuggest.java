@@ -1,10 +1,10 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ljy.musicplayer.biomusicplayer.listview.ListViewItem;
+import com.ljy.musicplayer.biomusicplayer.model.ListViewItem;
 
 public class ListViewItemSuggest extends ListViewItem {
 
@@ -12,7 +12,7 @@ public class ListViewItemSuggest extends ListViewItem {
     private String title;
     private String singer;
 
-    ListViewItemSuggest(int image, String title, String singer){
+    public ListViewItemSuggest(int image, String title, String singer){
         this.image = image;
         this.title = title;
         this.singer = singer;

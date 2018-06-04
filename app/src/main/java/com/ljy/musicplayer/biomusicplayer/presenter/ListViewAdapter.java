@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer.listview;
+package com.ljy.musicplayer.biomusicplayer.presenter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,10 +15,11 @@ import android.widget.Toast;
 import com.dominic.skuface.FaceApi;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
-import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemFaceEmotion;
-import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemMindwaveEeg;
-import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemMode;
-import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
+import com.ljy.musicplayer.biomusicplayer.model.ListViewItem;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemFaceEmotion;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemMindwaveEeg;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemMode;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
 
 import java.util.ArrayList;
 
@@ -39,11 +40,6 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
 
     // 공부모드용 아이템 데이터 리스트
     private ArrayList<ListViewItem> itemListStudy = new ArrayList<ListViewItem>();
-
-    @Override
-    public int getItemViewType(int position) {
-        return selectItemListByMode().get(position).getType();
-    }
 
     @Override
     public int getViewTypeCount() {
@@ -82,23 +78,22 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         return BioMusicPlayerApplication.getInstance().isStudyMode() ? itemListStudy : itemList;
     }
 
-    public void addItemMode(String modeName, Boolean modeState, View.OnClickListener toggleButtonEvent) {
+    public ListViewItemMode addItemMode(String modeName, Boolean modeState) {
         ListViewItemMode item = new ListViewItemMode();
 
-        item.setType(ITEM_VIEW_TYPE_MODE);
         item.setLayoutId(R.layout.listview_item_mode);
         item.setModeName(modeName);
         item.setModeState(modeState);
-        item.setOnToggleButtonClick(toggleButtonEvent);
 
         itemList.add(item);
         itemListStudy.add(item);
+
+        return item;
     }
 
     public void addItemSong(Drawable musicImg, String title, String artist, long duration, String filePath) {
         ListViewItemSong item = new ListViewItemSong();
 
-        item.setType(ITEM_VIEW_TYPE_SONG);
         item.setLayoutId(R.layout.listview_item_song);
         item.setMusicImg(musicImg);
         item.setMusicName(title);
@@ -113,9 +108,9 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
     }
 
     public void addItemFaceEmotion(Bitmap bitmap, FaceApi.Face face) {
+        //
         ListViewItemFaceEmotion item = new ListViewItemFaceEmotion(bitmap, face);
 
-        item.setType(ITEM_VIEW_TYPE_NORMAL);
         item.setLayoutId(R.layout.listview_item_face_emotion);
 
         if (itemList.get(1) instanceof ListViewItemFaceEmotion) {
@@ -129,7 +124,6 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
     public ListViewItemMindwaveEeg addItemMindwaveEeg(Activity activity) {
         ListViewItemMindwaveEeg item = new ListViewItemMindwaveEeg(activity);
 
-        item.setType(ITEM_VIEW_TYPE_MINDWAVE_STATE);
         item.setLayoutId(R.layout.listview_item_mindwave_eeg_chart);
 
         itemListStudy.add(item);
@@ -146,4 +140,5 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         }
 
     }
+
 }

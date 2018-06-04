@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.ljy.musicplayer.biomusicplayer.Tab1Fragment">
+    tools:context="com.ljy.musicplayer.biomusicplayer.view.Tab1Fragment">
 
 
     <ListView

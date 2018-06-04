@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.presenter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

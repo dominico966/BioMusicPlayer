@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -28,7 +28,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
+import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
+import com.ljy.musicplayer.biomusicplayer.R;
+import com.ljy.musicplayer.biomusicplayer.presenter.TabAdapter;
+import com.ljy.musicplayer.biomusicplayer.model.AudioService;
 
 import java.util.ArrayList;
 

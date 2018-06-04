@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer.listview;
+package com.ljy.musicplayer.biomusicplayer.model;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +11,7 @@ import android.view.ViewGroup;
 public abstract class ListViewItem {
 
     private int layoutId;
-    private int type;
     private View view = null;
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
 
     public int getLayoutId() {
         return layoutId;
