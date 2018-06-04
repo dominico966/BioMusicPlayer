@@ -7,6 +7,10 @@
         android:icon="@android:drawable/ic_btn_speak_now"
         android:title="음성인식"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_logout"
+        android:title="logout"
+        app:showAsAction="always" />
 
 </menu>
 

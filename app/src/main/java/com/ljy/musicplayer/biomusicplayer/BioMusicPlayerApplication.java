@@ -13,6 +13,10 @@ import com.ljy.musicplayer.biomusicplayer.presenter.AudioServiceInterface;
 import java.io.File;
 
 public class BioMusicPlayerApplication extends Application {
+
+    private static volatile BioMusicPlayerApplication obj = null;
+    private static volatile Activity currentActivity = null;
+
     private File musicDir;
     private boolean isStudyMode = false;
 
@@ -20,6 +24,7 @@ public class BioMusicPlayerApplication extends Application {
     private Mindwave mindwave;
     private AudioServiceInterface mInterface;
     private static BioMusicPlayerApplication mInstance;
+
 
     public static BioMusicPlayerApplication getInstance() {
         return mInstance;
@@ -53,6 +58,7 @@ public class BioMusicPlayerApplication extends Application {
         Log.d("start", "" + "start application");
         super.onCreate();
         mInstance = this;
+        obj = this;
         mInterface = new AudioServiceInterface(getApplicationContext());
         musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
     }
@@ -67,6 +73,29 @@ public class BioMusicPlayerApplication extends Application {
         matrix.postScale(scaledWidth, scaledHeight);
 
         return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        obj=null;
+        mInstance = null;
+    }
+
+    public static BioMusicPlayerApplication getGlobalApplicationContext(){
+        if(obj ==null)
+            throw new IllegalStateException("this application does not inherit com.kakao.GlobalApplication");
+
+        return obj;
+    }
+
+    public static Activity getCurrentActivity(){
+        return  currentActivity;
+    }
+
+    //Activity 올라올때마다 Activity의 onCreate에서 호출해줘야한다.
+    public static void setCurrentActivity(Activity currentActivity) {
+        BioMusicPlayerApplication.currentActivity=currentActivity;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer.view;
+package com.ljy.musicplayer.biomusicplayer;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -28,6 +28,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.presenter.TabAdapter;
@@ -43,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mTxtDuration;
     private ImageButton mBtnPlayPause;
     private SeekBar mSeekBar;
+
+    private GoogleSignInClient mGoogleSignInClient; // google
 
     private Handler mHandler = new Handler();
     Runnable seekbarDurationAnimationTask = new Runnable() {
@@ -71,8 +82,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // google
+        // 사용자 정보 가져오는 부분
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        Intent i = getIntent();
+        String name = i.getStringExtra("name");
+
         //사용자이름
-        setTitle("홍길동");
+        setTitle(name);
         getSupportActionBar().setBackgroundDrawable(getDrawable(R.drawable.bg_gradient));
 
         ViewPager viewPager = findViewById(R.id.viewPager);
