@@ -1,9 +1,12 @@
 package com.ljy.musicplayer.biomusicplayer;
 
 import android.app.Application;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.Environment;
 import android.util.Log;
 
+import com.dominic.skuface.FaceApi;
 import com.ljy.musicplayer.biomusicplayer.model.Mindwave;
 import com.ljy.musicplayer.biomusicplayer.presenter.AudioServiceInterface;
 
@@ -17,7 +20,6 @@ public class BioMusicPlayerApplication extends Application {
     private Mindwave mindwave;
     private AudioServiceInterface mInterface;
     private static BioMusicPlayerApplication mInstance;
-
 
     public static BioMusicPlayerApplication getInstance() {
         return mInstance;
@@ -53,6 +55,18 @@ public class BioMusicPlayerApplication extends Application {
         mInstance = this;
         mInterface = new AudioServiceInterface(getApplicationContext());
         musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+    }
+
+    public static Bitmap resizeBitmap(Bitmap src, float newWidth, float newHeight) {
+        Matrix matrix = new Matrix();
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        float scaledWidth = newWidth / width;
+        float scaledHeight = newHeight / height;
+        matrix.postScale(scaledWidth, scaledHeight);
+
+        return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
     }
 
 }

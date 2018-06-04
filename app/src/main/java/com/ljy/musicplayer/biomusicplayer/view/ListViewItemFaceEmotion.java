@@ -20,14 +20,23 @@ import java.util.Map;
 
 public class ListViewItemFaceEmotion extends ListViewItem {
 
-    private Bitmap bitmap;
+    private Bitmap profileBitmap;
     private FaceApi.Face face;
 
-    public ListViewItemFaceEmotion(Bitmap bitmap, FaceApi.Face face) {
-        this.bitmap = bitmap;
-        this.face = face;
+    public Bitmap getProfileBitmap() {
+        return profileBitmap;
+    }
 
-        Log.d("pwy", face.getEmotion().neutral + "");
+    public void setProfileBitmap(Bitmap profileBitmap) {
+        this.profileBitmap = profileBitmap;
+    }
+
+    public FaceApi.Face getFace() {
+        return face;
+    }
+
+    public void setFace(FaceApi.Face face) {
+        this.face = face;
     }
 
     @Override
@@ -40,10 +49,8 @@ public class ListViewItemFaceEmotion extends ListViewItem {
 
         ImageView faceImage = view.findViewById(R.id.image_view_face);
 
-        Log.d("pwy", face.getEmotion().neutral + "");
-
         //detectAndFrame 이후의 Bitmap
-        faceImage.setImageBitmap(bitmap);
+        faceImage.setImageBitmap(profileBitmap);
 
         LinearLayout linearLayout = view.findViewById(R.id.face_info);
 

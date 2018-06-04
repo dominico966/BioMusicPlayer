@@ -10,4 +10,6 @@ public abstract class ListViewItemPresenter {
     public ListViewAdapter getListViewAdapter(){
         return this.listViewAdapter;
     }
+
+    public abstract void setEvent();
 }

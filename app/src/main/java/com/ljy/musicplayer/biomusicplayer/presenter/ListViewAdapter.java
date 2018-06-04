@@ -2,8 +2,6 @@ package com.ljy.musicplayer.biomusicplayer.presenter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
-import com.dominic.skuface.FaceApi;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.model.ListViewItem;
@@ -91,25 +88,22 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         return item;
     }
 
-    public void addItemSong(Drawable musicImg, String title, String artist, long duration, String filePath) {
+    public ListViewItemSong addItemSong() {
         ListViewItemSong item = new ListViewItemSong();
 
         item.setLayoutId(R.layout.listview_item_song);
-        item.setMusicImg(musicImg);
-        item.setMusicName(title);
-        item.setDuration(duration);
-        item.setSingerName(artist);
-        item.setFilePath(filePath);
 
         ListViewItemSong.songList.add(item);
 
         itemList.add(item);
         itemListStudy.add(item);
+
+        return item;
     }
 
-    public void addItemFaceEmotion(Bitmap bitmap, FaceApi.Face face) {
-        //
-        ListViewItemFaceEmotion item = new ListViewItemFaceEmotion(bitmap, face);
+    public ListViewItemFaceEmotion addItemFaceEmotion() {
+
+        ListViewItemFaceEmotion item = new ListViewItemFaceEmotion();
 
         item.setLayoutId(R.layout.listview_item_face_emotion);
 
@@ -119,6 +113,8 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         } else {
             itemList.add(1, item);
         }
+
+        return item;
     }
 
     public ListViewItemMindwaveEeg addItemMindwaveEeg(Activity activity) {
@@ -127,6 +123,7 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         item.setLayoutId(R.layout.listview_item_mindwave_eeg_chart);
 
         itemListStudy.add(item);
+
         return item;
     }
 

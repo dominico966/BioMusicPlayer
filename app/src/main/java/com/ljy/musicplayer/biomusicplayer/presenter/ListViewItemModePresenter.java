@@ -36,9 +36,10 @@ public class ListViewItemModePresenter extends ListViewItemPresenter{
         this.view = view;
 
         this.activity =  (AppCompatActivity) view.getActivity();
-        app = (BioMusicPlayerApplication) activity.getApplication();
+        this.app = (BioMusicPlayerApplication) activity.getApplication();
     }
 
+    @Override
     public void setEvent() {
         model.setOnToggleButtonClick(toggleButtonEvent);
     }
