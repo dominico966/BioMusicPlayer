@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:orderInCategory="0"
         android:id="@+id/menu_face_scan"
         android:icon="@drawable/ic_face_scan"
         android:title="얼굴인식"

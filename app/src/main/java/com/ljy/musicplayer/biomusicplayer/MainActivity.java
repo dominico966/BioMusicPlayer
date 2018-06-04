@@ -18,12 +18,13 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.Task;
 import com.kakao.auth.KakaoSDK;
 import com.kakao.auth.Session;
+import com.ljy.musicplayer.biomusicplayer.view.AppActivity;
 
 import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int RC_SIGN_IN = 9001;
     private LoginLib loginLib;
@@ -34,7 +35,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         KakaoSDK.init(new KakaoSdkAdapter());
-        loginLib = new LoginLib(this,new MainActivity());
+        loginLib = new LoginLib(this, new AppActivity());
 
         // Google
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -67,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onCompleted(JSONObject object, GraphResponse response) {
                     Log.i("result",object.toString());
-                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    Intent intent = new Intent(MainActivity.this,AppActivity.class);
 
                     intent.putExtra("id",object.optString("id"));
                     intent.putExtra("email",object.optString("name"));

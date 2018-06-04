@@ -1,4 +1,4 @@
-package com.ljy.musicplayer.biomusicplayer;
+package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -28,26 +28,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.kakao.auth.Session;
-import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
-import com.ljy.musicplayer.biomusicplayer.presenter.TabAdapter;
 import com.ljy.musicplayer.biomusicplayer.model.AudioService;
-import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
-import com.ljy.musicplayer.biomusicplayer.view.Tab1Fragment;
-import com.ljy.musicplayer.biomusicplayer.view.Tab2Fragment;
+import com.ljy.musicplayer.biomusicplayer.presenter.TabAdapter;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class AppActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView mImgAlbumArt;
     private TextView mTxtTitle;
@@ -357,19 +348,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         switch (j) {
                             case 0: //다음
                                 BioMusicPlayerApplication.getInstance().getServiceInterface().forward();
-                                Toast.makeText(MainActivity.this, "다음노래 재생", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AppActivity.this, "다음노래 재생", Toast.LENGTH_SHORT).show();
                                 break;
                             case 1:    //이전
                                 BioMusicPlayerApplication.getInstance().getServiceInterface().rewind();
-                                Toast.makeText(MainActivity.this, "이전노래 재생", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AppActivity.this, "이전노래 재생", Toast.LENGTH_SHORT).show();
                                 break;
                             case 2:
                                 BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
-                                Toast.makeText(MainActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AppActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();
                                 break;
                             case 3:
                                 BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
-                                Toast.makeText(MainActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AppActivity.this, "재생/일시정지", Toast.LENGTH_SHORT).show();
                                 break;
                             default:
 
@@ -384,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             if (!isFind) {
-                Toast.makeText(MainActivity.this, "해당 명령어는 유효하지 않습니다 : " + matches.get(0), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AppActivity.this, "해당 명령어는 유효하지 않습니다 : " + matches.get(0), Toast.LENGTH_SHORT).show();
 
             } else
 
@@ -404,11 +395,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void getPermissions(String[] permissions) {
         if (ContextCompat.checkSelfPermission(
-                MainActivity.this,
+                AppActivity.this,
                 Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(
-                    MainActivity.this,
+                    AppActivity.this,
                     permissions,
                     REQUEST_PERMISSIONS);
         }

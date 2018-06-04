@@ -3,11 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:orderInCategory="1"
         android:id="@+id/menu_voice_scan"
         android:icon="@android:drawable/ic_btn_speak_now"
         android:title="음성인식"
         app:showAsAction="always" />
     <item
+        android:orderInCategory="2"
         android:id="@+id/menu_logout"
         android:title="logout"
         app:showAsAction="always" />
