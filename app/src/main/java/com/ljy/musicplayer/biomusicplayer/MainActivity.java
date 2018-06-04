@@ -28,6 +28,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.ljy.musicplayer.biomusicplayer.listview.tab1.ListViewItemSong;
 
 import java.util.ArrayList;
@@ -40,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mTxtDuration;
     private ImageButton mBtnPlayPause;
     private SeekBar mSeekBar;
+
+    private GoogleSignInClient mGoogleSignInClient; // google
 
     private Handler mHandler = new Handler();
     Runnable seekbarDurationAnimationTask = new Runnable() {
@@ -63,13 +74,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String audioEventString[] = {"다음", "이전", "정지", "재생"};
     private static final int REQUEST_PERMISSIONS = 1234;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        // google
+        // 사용자 정보 가져오는 부분
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        Intent i = getIntent();
+        String name = i.getStringExtra("name");
+
         //사용자이름
-        setTitle("홍길동");
+        setTitle(name);
         getSupportActionBar().setBackgroundDrawable(getDrawable(R.drawable.bg_gradient));
 
         ViewPager viewPager = findViewById(R.id.viewPager);
@@ -245,6 +268,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "음성인식 취소", Toast.LENGTH_SHORT).show();
                 mRecognizer.stopListening();
             }
+        }else if(item.getItemId() == R.id.menu_logout){
+            mGoogleSignInClient.revokeAccess().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                }
+            });
+            LoginManager.getInstance().logOut();
+            UserManagement userManagement = UserManagement.getInstance();
+            userManagement.requestLogout(new LogoutResponseCallback() {
+                @Override
+                public void onCompleteLogout() {
+                }
+            });
+            Session.getCurrentSession().close();
+
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -253,6 +292,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         unregisterBroadcast();
+    }
+
+    // backbutton 무시
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
     }
 
     //OnClick 리스너 구현
