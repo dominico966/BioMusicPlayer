@@ -28,9 +28,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.model.AudioService;
@@ -262,6 +268,24 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
                 Toast.makeText(this, "음성인식 취소", Toast.LENGTH_SHORT).show();
                 mRecognizer.stopListening();
             }
+
+
+        }else if(item.getItemId() == R.id.menu_logout){
+            mGoogleSignInClient.revokeAccess().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                }
+            });
+            LoginManager.getInstance().logOut();
+            UserManagement userManagement = UserManagement.getInstance();
+            userManagement.requestLogout(new LogoutResponseCallback() {
+                @Override
+                public void onCompleteLogout() {
+                }
+            });
+            Session.getCurrentSession().close();
+
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }

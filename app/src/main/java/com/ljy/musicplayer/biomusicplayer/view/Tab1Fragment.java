@@ -183,7 +183,7 @@ public class Tab1Fragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        listViewItemFaceEmotionPresenter.dismiss();
+//        listViewItemFaceEmotionPresenter.dismiss();
     }
 
 
