@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 public class AudioService extends Service {
     private boolean isPrepared;
+    private int mPreviousPostion;
     private int mCurrentPosition;
     private MediaPlayer mMediaPlayer;
     private ListViewItemSong mAudioItem;
@@ -43,6 +44,11 @@ public class AudioService extends Service {
                 mp.start();
                 sendBroadcast(new Intent(BroadcastActions.PREPARED)); // prepared 전송
                 sendBroadcast(new Intent(BroadcastActions.PLAY_STATE_CHANGED)); // 재생상태 변경 전송
+
+                Intent intent = new Intent("biomusicplayer.music.play");
+                intent.putExtra("previousPosition",mPreviousPostion);
+                intent.putExtra("currentPosition",mCurrentPosition);
+                sendBroadcast(intent);
 
             }
         });
@@ -112,6 +118,7 @@ public class AudioService extends Service {
 
     public void play(int position) {
         if(position < 0) position = 0;
+        mPreviousPostion = mCurrentPosition;
         mCurrentPosition = position;
         mAudioItem = ListViewItemSong.songList.get(mCurrentPosition);
         stop();

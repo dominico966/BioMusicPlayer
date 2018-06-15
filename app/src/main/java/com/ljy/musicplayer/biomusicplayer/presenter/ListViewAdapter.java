@@ -16,7 +16,10 @@ import com.ljy.musicplayer.biomusicplayer.model.ListViewItem;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemFaceEmotion;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemMindwaveEeg;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemMode;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemPieChart;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSongSuggest;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSuggest;
 
 import java.util.ArrayList;
 
@@ -24,13 +27,13 @@ import java.util.ArrayList;
  * Created by wjddp on 2018-03-29.
  */
 
-public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+public class ListViewAdapter extends BaseAdapter {
 
     private static final int ITEM_VIEW_TYPE_MODE = 0;
     private static final int ITEM_VIEW_TYPE_SONG = 1;
     private static final int ITEM_VIEW_TYPE_MINDWAVE_STATE = 2;
     private static final int ITEM_VIEW_TYPE_NORMAL = 3;
-    private static final int ITEM_VIEW_TYPE_MAX = 4;
+    private static final int ITEM_VIEW_TYPE_MAX = 6;
 
     // 아이템 데이터 리스트
     private ArrayList<ListViewItem> itemList = new ArrayList<ListViewItem>();
@@ -75,6 +78,9 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
         return BioMusicPlayerApplication.getInstance().isStudyMode() ? itemListStudy : itemList;
     }
 
+    /*
+    * Tab1 ListItem Element Add Method
+    * */
     public ListViewItemMode addItemMode(String modeName, Boolean modeState) {
         ListViewItemMode item = new ListViewItemMode();
 
@@ -91,10 +97,6 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
     public ListViewItemSong addItemSong() {
         ListViewItemSong item = new ListViewItemSong();
 
-        item.setLayoutId(R.layout.listview_item_song);
-
-        ListViewItemSong.songList.add(item);
-
         itemList.add(item);
         itemListStudy.add(item);
 
@@ -104,8 +106,6 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
     public ListViewItemFaceEmotion addItemFaceEmotion() {
 
         ListViewItemFaceEmotion item = new ListViewItemFaceEmotion();
-
-        item.setLayoutId(R.layout.listview_item_face_emotion);
 
         if (itemList.get(1) instanceof ListViewItemFaceEmotion) {
             itemList.add(2, item);
@@ -120,22 +120,54 @@ public class ListViewAdapter extends BaseAdapter implements AdapterView.OnItemCl
     public ListViewItemMindwaveEeg addItemMindwaveEeg(Activity activity) {
         ListViewItemMindwaveEeg item = new ListViewItemMindwaveEeg(activity);
 
-        item.setLayoutId(R.layout.listview_item_mindwave_eeg_chart);
+        itemListStudy.add(item);
 
+        return item;
+    }
+    /*
+     * Tab1 ListItem Element Add Method End
+     * */
+
+    /*
+     * Tab2 ListItem Element Add Method
+     * */
+    public ListViewItemPieChart addItemPieChart() {
+        ListViewItemPieChart item = new ListViewItemPieChart();
+
+        itemList.add(item);
         itemListStudy.add(item);
 
         return item;
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        ListViewItem item = selectItemListByMode().get(i);
+    public ListViewItemSongSuggest addItemSongSuggest() {
+        ListViewItemSongSuggest item = new ListViewItemSongSuggest();
 
-        if (item instanceof ListViewItemSong) {
-            BioMusicPlayerApplication.getInstance().getServiceInterface().play(ListViewItemSong.songList.indexOf(item)); // 선택한 오디오재생
-            Toast.makeText(view.getContext(), ListViewItemSong.songList.indexOf(item) + " " + ((ListViewItemSong) item).getMusicName(), Toast.LENGTH_SHORT).show();
-        }
+        itemList.add(item);
+        itemListStudy.add(item);
 
+        return item;
     }
+
+    public void removeSuggest() {
+        while(itemList.size() != 2 && itemListStudy.size() != 2) {
+            itemList.remove(2);
+            itemListStudy.remove(2);
+        }
+    }
+
+    public void showSuggest(ListViewItemSong.Genre genre) {
+        for(ListViewItemSuggest item : ListViewItemSuggest.suggests) {
+            if(genre.toString().equals(item.getGenre())) {
+                itemList.add(item);
+                itemListStudy.add(item);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    /*
+     * Tab2 ListItem Element Add Method End
+     * */
 
 }

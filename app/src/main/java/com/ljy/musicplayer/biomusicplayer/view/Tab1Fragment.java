@@ -2,6 +2,9 @@ package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -63,7 +66,6 @@ public class Tab1Fragment extends Fragment {
 
         //리스트뷰 Adapter
         listView.setAdapter(listViewAdapter);
-        listView.setOnItemClickListener(listViewAdapter);
 
         ListViewItemMode listViewItemMode = listViewAdapter.addItemMode("Study Mode", app.isStudyMode());
         ListViewItemMindwaveEeg listViewItemMindwaveEeg = listViewAdapter.addItemMindwaveEeg(getActivity());
@@ -72,12 +74,16 @@ public class Tab1Fragment extends Fragment {
         listViewItemModePresenter = new ListViewItemModePresenter(listViewAdapter,listViewItemMode,this);
         listViewItemMindwaveEegPresenter = new ListViewItemMindwaveEegPresenter(listViewAdapter, listViewItemMindwaveEeg, this);
 
-        listViewItemModePresenter.setEvent();
-        listViewItemMindwaveEegPresenter.setEvent();
-
         checkPermissionReadStorage(getActivity());
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        listViewItemModePresenter.setEvent();
+        listViewItemMindwaveEegPresenter.setEvent();
     }
 
     public void checkPermissionReadStorage(Activity activity) {
@@ -127,6 +133,7 @@ public class Tab1Fragment extends Fragment {
             listViewItemSongPresenter.setEvent();
         }
 
+        listViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -185,6 +192,5 @@ public class Tab1Fragment extends Fragment {
         super.onDestroy();
         listViewItemFaceEmotionPresenter.dismiss();
     }
-
 
 }

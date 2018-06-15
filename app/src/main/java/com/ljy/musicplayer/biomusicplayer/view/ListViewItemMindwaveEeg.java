@@ -31,6 +31,8 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
     private LineChart mStatusChart;
 
     public ListViewItemMindwaveEeg(Activity activity) {
+        super();
+        super.setLayoutId(R.layout.listview_item_mindwave_eeg_chart);
         this.activity = activity;
     }
 
