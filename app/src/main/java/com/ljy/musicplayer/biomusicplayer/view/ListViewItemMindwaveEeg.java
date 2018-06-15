@@ -1,13 +1,16 @@
 package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -29,6 +32,7 @@ import java.util.Arrays;
 public class ListViewItemMindwaveEeg extends ListViewItem {
     private Activity activity;
     private LineChart mStatusChart;
+    private boolean isGoodSignal = false;
 
     public ListViewItemMindwaveEeg(Activity activity) {
         super();
@@ -37,7 +41,7 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
     }
 
     @Override
-    public View getView(LayoutInflater inflater, ViewGroup parent) {
+    public View getView(final LayoutInflater inflater, ViewGroup parent) {
         View view = super.getView();
         if (view != null) return view;
         view = inflater.inflate(getLayoutId(), parent, false);
@@ -61,7 +65,7 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
                 mMindwave.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        for(ImageView iv : imgViews) {
+                        for (ImageView iv : imgViews) {
                             iv.setVisibility(View.INVISIBLE);
                         }
 
@@ -81,11 +85,18 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
                             default:
                                 imgViews[0].setVisibility(View.VISIBLE);
                         }
+
+                        switch (NskAlgoSignalQuality.values()[quality]) {
+                            case NSK_ALGO_SQ_GOOD:
+                                isGoodSignal = true;
+                                break;
+                            default:
+                                isGoodSignal = false;
+                        }
                     }
                 });
             }
         });
-
 
 
         mMindwave.setOnBPAlgoIndexListener(new NskAlgoSdk.OnBPAlgoIndexListener() {
@@ -94,7 +105,7 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("pwy.addRaw", Arrays.toString(new float[] {delta, theta, alpha, beta, gamma}));
+                        Log.d("pwy.addRaw", Arrays.toString(new float[]{delta, theta, alpha, beta, gamma}));
                         addRawEntry(new float[]{delta, theta, alpha, beta, gamma});
                     }
                 });
@@ -112,6 +123,13 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
                         TextView txtAtt = copyView.findViewById(R.id.status_att);
                         txtAtt.setText(att);
 
+                        if (i <= 30 && isGoodSignal) {
+                            final Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(
+                                    new long[]{100, 1000}
+                                    , -1
+                            );
+                        }
                     }
                 });
             }
@@ -119,6 +137,7 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
 
 
         mMindwave.setOnEyeBlinkDetectionListener(new NskAlgoSdk.OnEyeBlinkDetectionListener() {
+
             Runnable eyeBlinkEvent = new Runnable() {
                 @Override
                 public void run() {
@@ -140,15 +159,41 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
                         @Override
                         public void run() {
                             txtBlink.setBackgroundColor(Color.parseColor("#606060"));
+                            pauseCheck();
                         }
                     });
+
                 }
+
             };
 
             @Override
             public void onEyeBlinkDetect(int i) {
                 new Thread(eyeBlinkEvent).start();
-                Log.d("eye blink", "!!");
+            }
+
+            private final long FINISH_INTERVAL_TIME = 2000;
+            private long backPressedTime = 0;
+            private int count = 0;
+
+            public void pauseCheck() {
+                long tempTime = System.currentTimeMillis();
+                long intervalTime = tempTime - backPressedTime;
+
+                if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime && count == 0) {
+                    count++;
+                    backPressedTime = tempTime;
+                } else if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime && count == 1) {
+                    count++;
+                    backPressedTime = tempTime;
+                } else if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime && count == 2) {
+                    count = 0;
+                    Toast.makeText(inflater.getContext(), "3번 깜빡임 감지\n재생/일시정지", Toast.LENGTH_SHORT).show();
+                    BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
+                } else {
+                    count = 0;
+                    backPressedTime = tempTime;
+                }
             }
         });
 
