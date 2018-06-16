@@ -41,6 +41,15 @@ public class ListViewItemSong extends ListViewItem {
     private String filePath;
     private long duration;
     private String genre;
+    private boolean isPlaying;
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
 
     public ListViewItemSong() {
         super();
@@ -133,6 +142,12 @@ public class ListViewItemSong extends ListViewItem {
         };
 
         view.setOnClickListener(onClickListener);
+
+        if(isPlaying()) {
+            view.setBackgroundResource(R.drawable.bg_gradient);
+        } else {
+            view.setBackgroundResource(android.R.drawable.list_selector_background);
+        }
 
         return view;
     }

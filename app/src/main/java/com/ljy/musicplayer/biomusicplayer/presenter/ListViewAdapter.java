@@ -78,6 +78,11 @@ public class ListViewAdapter extends BaseAdapter {
         return BioMusicPlayerApplication.getInstance().isStudyMode() ? itemListStudy : itemList;
     }
 
+    public void addItem(ListViewItem item) {
+        itemList.add(item);
+        itemListStudy.add(item);
+    }
+
     /*
     * Tab1 ListItem Element Add Method
     * */

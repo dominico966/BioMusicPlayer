@@ -46,6 +46,12 @@
             </intent-filter>
         </service>
 
+        <receiver android:name=".presenter.UiUpdateBroadcastReceiver">
+            <intent-filter>
+                <action android:name="biomusicplayer.music.play" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
     <uses-feature

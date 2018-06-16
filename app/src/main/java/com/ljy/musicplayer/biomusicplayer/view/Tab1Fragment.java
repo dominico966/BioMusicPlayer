@@ -71,7 +71,7 @@ public class Tab1Fragment extends Fragment {
         ListViewItemMindwaveEeg listViewItemMindwaveEeg = listViewAdapter.addItemMindwaveEeg(getActivity());
 
         //리스트뷰 Presenter
-        listViewItemModePresenter = new ListViewItemModePresenter(listViewAdapter,listViewItemMode,this);
+        listViewItemModePresenter = new ListViewItemModePresenter(listViewAdapter, listViewItemMode, this);
         listViewItemMindwaveEegPresenter = new ListViewItemMindwaveEegPresenter(listViewAdapter, listViewItemMindwaveEeg, this);
 
         checkPermissionReadStorage(getActivity());
@@ -84,6 +84,13 @@ public class Tab1Fragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         listViewItemModePresenter.setEvent();
         listViewItemMindwaveEegPresenter.setEvent();
+    }
+
+    @Override
+    public void onStart() {
+        listViewAdapter.notifyDataSetChanged();
+        listView.invalidate();
+        super.onStart();
     }
 
     public void checkPermissionReadStorage(Activity activity) {
@@ -119,18 +126,24 @@ public class Tab1Fragment extends Fragment {
     }
 
     private void loadSongsFromMusicDir() {
-        File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-        File[] list = root.listFiles();
-        Log.d("pwy", root.getPath());
-        Log.d("pwy", list.length + "");
-        app.setMusicDir(root);
+        if (ListViewItemSong.songList.isEmpty()) {
+            File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+            File[] list = root.listFiles();
+            Log.d("pwy", root.getPath());
+            Log.d("pwy", list.length + "");
+            app.setMusicDir(root);
 
-        for(File file : list) {
-            if(!file.getName().endsWith(".mp3")) continue;
-            ListViewItemSong listViewItemSong = listViewAdapter.addItemSong();
-            listViewItemSongPresenter = new ListViewItemSongPresenter(listViewAdapter, listViewItemSong, this);
-            listViewItemSongPresenter.file = file;
-            listViewItemSongPresenter.setEvent();
+            for (File file : list) {
+                if (!file.getName().endsWith(".mp3")) continue;
+                ListViewItemSong listViewItemSong = listViewAdapter.addItemSong();
+                listViewItemSongPresenter = new ListViewItemSongPresenter(listViewAdapter, listViewItemSong, this);
+                listViewItemSongPresenter.file = file;
+                listViewItemSongPresenter.setEvent();
+            }
+        } else {
+            for (ListViewItemSong item : ListViewItemSong.songList) {
+                listViewAdapter.addItem(item);
+            }
         }
 
         listViewAdapter.notifyDataSetChanged();
@@ -150,7 +163,7 @@ public class Tab1Fragment extends Fragment {
                 Toast.makeText(getActivity(), "얼굴인식", Toast.LENGTH_SHORT).show();
 
                 ListViewItemFaceEmotion listViewItemFaceEmotion = listViewAdapter.addItemFaceEmotion();
-                listViewItemFaceEmotionPresenter = new ListViewItemFaceEmotionPresenter(listViewAdapter, listViewItemFaceEmotion,this);
+                listViewItemFaceEmotionPresenter = new ListViewItemFaceEmotionPresenter(listViewAdapter, listViewItemFaceEmotion, this);
                 listViewItemFaceEmotionPresenter.setEvent();
                 break;
             default:
@@ -188,7 +201,7 @@ public class Tab1Fragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(listViewItemFaceEmotionPresenter != null)
+        if (listViewItemFaceEmotionPresenter != null)
             listViewItemFaceEmotionPresenter.dismiss();
     }
 
