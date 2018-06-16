@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.loginlibrary.LoginLib;
 import com.facebook.AccessToken;
@@ -48,6 +49,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Facebook
         final LoginButton loginButton = findViewById(R.id.login_button);
+        LinearLayout fbBtn = findViewById(R.id.fake_fb_btn);
+        fbBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginButton.performClick();
+            }
+        });
         loginButton.setReadPermissions(Arrays.asList("public_profile","email"));
         loginButton.registerCallback(loginLib.facebookLogin.getCallbackManager(),
                 loginLib.facebookLogin.getFacebookCallback());
