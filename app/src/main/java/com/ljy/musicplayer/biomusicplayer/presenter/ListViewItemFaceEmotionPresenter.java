@@ -18,14 +18,20 @@ import com.dominic.skuface.FaceDetectionCamera;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.model.FaceCaptureController;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemFaceEmotion;
-import com.ljy.musicplayer.biomusicplayer.view.ListViewItemMindwaveEeg;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class ListViewItemFaceEmotionPresenter extends ListViewItemPresenter {
     // MVP 모델
     private ListViewItemFaceEmotion model;
     private Fragment view;
+    private FaceApi.Face face;
 
     // face api
     private final static int FACE_DETECTION = 0;
@@ -66,11 +72,28 @@ public class ListViewItemFaceEmotionPresenter extends ListViewItemPresenter {
             FaceCaptureController fcc = new FaceCaptureController(activity, progressDialog, faceApi, faceDetectionCamera);
             fcc.execute();
         }
+    }
 
+    public void outputFaceEmotionObject(FaceApi.Face.Emotion userFaceEmotion) {
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd.hh:mm:ss");
+        String currentTime = sdf.format(date);
+
+        File file = new File(activity.getFilesDir(), currentTime + ".face");
+
+        try {
+            FileOutputStream fos = new FileOutputStream(file.getPath());
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(userFaceEmotion);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void dismiss() {
-        if(progressDialog != null)
+        if (progressDialog != null)
             progressDialog.dismiss();
     }
 
@@ -85,8 +108,10 @@ public class ListViewItemFaceEmotionPresenter extends ListViewItemPresenter {
                     progressDialog.dismiss();
                     if (faceList.isEmpty()) return;
 
+                    face = faceList.get(faceList.size() - 1);
+
                     // 비트맵 자르기
-                    Rectangle r = faceList.get(faceList.size()-1).getFaceRectangle();
+                    Rectangle r = face.getFaceRectangle();
                     Bitmap cut = Bitmap.createBitmap(
                             framedImage,
                             r.x - 50 <= 0 ? 0 : r.x - 50,
@@ -95,16 +120,17 @@ public class ListViewItemFaceEmotionPresenter extends ListViewItemPresenter {
                             r.y + r.height + 100 >= framedImage.getHeight() ? framedImage.getHeight() - r.y : r.height + 100);
 
                     model.setProfileBitmap(cut);
-                    model.setFace(faceList.get(faceList.size() - 1));
+                    model.setFace(face);
+                    getListViewAdapter().notifyDataSetChanged();
 
                     ActionBar actionBar = activity.getSupportActionBar();
-                    BitmapDrawable bd = new BitmapDrawable(activity.getResources(),BioMusicPlayerApplication.resizeBitmap(cut,120,120));
+                    BitmapDrawable bd = new BitmapDrawable(activity.getResources(), BioMusicPlayerApplication.resizeBitmap(cut, 120, 120));
 
                     actionBar.setIcon(bd);
                     actionBar.setDisplayShowHomeEnabled(true);
                     actionBar.setDisplayUseLogoEnabled(true);
 
-                    ListViewItemFaceEmotionPresenter.this.getListViewAdapter().notifyDataSetChanged();
+                    outputFaceEmotionObject(model.getFace().getEmotion());
                 }
             });
         }

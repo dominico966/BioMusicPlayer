@@ -137,7 +137,6 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
 
 
         mMindwave.setOnEyeBlinkDetectionListener(new NskAlgoSdk.OnEyeBlinkDetectionListener() {
-
             Runnable eyeBlinkEvent = new Runnable() {
                 @Override
                 public void run() {

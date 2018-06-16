@@ -150,9 +150,7 @@ public class Tab1Fragment extends Fragment {
                 Toast.makeText(getActivity(), "얼굴인식", Toast.LENGTH_SHORT).show();
 
                 ListViewItemFaceEmotion listViewItemFaceEmotion = listViewAdapter.addItemFaceEmotion();
-                if(listViewItemFaceEmotionPresenter == null)
-                    listViewItemFaceEmotionPresenter = new ListViewItemFaceEmotionPresenter(listViewAdapter, listViewItemFaceEmotion,this);
-
+                listViewItemFaceEmotionPresenter = new ListViewItemFaceEmotionPresenter(listViewAdapter, listViewItemFaceEmotion,this);
                 listViewItemFaceEmotionPresenter.setEvent();
                 break;
             default:
@@ -190,7 +188,8 @@ public class Tab1Fragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        listViewItemFaceEmotionPresenter.dismiss();
+        if(listViewItemFaceEmotionPresenter != null)
+            listViewItemFaceEmotionPresenter.dismiss();
     }
 
 }
