@@ -95,42 +95,13 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
         TabAdapter adapter = new TabAdapter(getSupportFragmentManager());
 
         //탭 추가
-        adapter.addFragment(new Tab1Fragment(), "Tab1");
-        adapter.addFragment(new Tab2Fragment(), "Tab2");
+        adapter.addFragment(new Tab1Fragment(), "Music");
+        adapter.addFragment(new Tab2Fragment(), "Graph");
         viewPager.setAdapter(adapter);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Intent intent = new Intent();
-
-                switch (position) {
-                    case 0: {
-                        intent.setAction("biomusicplayer.tab2.ui.update");
-                    }
-                    break;
-
-                    case 1: {
-                        intent.setAction("biomusicplayer.tab1.ui.update");
-                    }
-                    break;
-                }
-
-                sendBroadcast(intent);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_music);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_graph);
 
         //MiniPlayer 세팅
         mImgAlbumArt = findViewById(R.id.img_albumart);
