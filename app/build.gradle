@@ -38,8 +38,10 @@ dependencies {
     // 그래프 API
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     // 우영 FaceAPI
-    implementation 'com.github.dominico966:FaceAPITest:0.9.6.2'
+    implementation 'com.github.dominico966:FaceAPITest:0.9.6.3'
     implementation 'com.android.support:recyclerview-v7:27.1.0'
     // login API
     implementation 'com.github.shortleader:biologin:0.0.3'
+
+    implementation 'com.android.support:support-v4:23.4.0'
 }

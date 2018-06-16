@@ -105,6 +105,37 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
         adapter.addFragment(new Tab2Fragment(), "Tab2");
         viewPager.setAdapter(adapter);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Intent intent = new Intent();
+
+                switch (position) {
+                    case 0: {
+                        intent.setAction("biomusicplayer.tab2.ui.update");
+                    }
+                    break;
+
+                    case 1: {
+                        intent.setAction("biomusicplayer.tab1.ui.update");
+                    }
+                    break;
+                }
+
+                sendBroadcast(intent);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
         tabLayout.setupWithViewPager(viewPager);
 
         //MiniPlayer 세팅
@@ -208,6 +239,10 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
             mImgAlbumArt.setImageDrawable(audioItem.getMusicImg());
             mTxtTitle.setText(audioItem.getMusicName());
 
+            ListViewItemSuggest audioItemSuggested = ListViewItemSuggest.suggests.get(ListViewItemSong.songList.indexOf(audioItem));
+            audioItemSuggested.setPlaying(true);
+            audioItem.setPlaying(true);
+
             int duration = BioMusicPlayerApplication.getInstance().getServiceInterface().getDuration();
             int min = (duration / 1000) / 60;
             int sec = (duration / 1000) % 60;
@@ -218,6 +253,8 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
             mImgAlbumArt.setImageResource(R.drawable.empty_albumart);
             mTxtTitle.setText("재생중인 음악이 없습니다.");
         }
+
+
     }
 
     @Override
@@ -241,7 +278,6 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.activity_menu, menu);
         return true;
     }

@@ -20,6 +20,18 @@ import java.util.ArrayList;
  */
 
 public class ListViewItemSong extends ListViewItem {
+    public enum Genre{
+        Happiness("happiness"),Surprise("surprise"),Sadness("sadness"),Anger("anger");
+
+        private String genre;
+        Genre(String genre) {
+            this.genre = genre;
+        }
+
+        public String toString() {
+            return genre;
+        }
+    }
 
     public static ArrayList<ListViewItemSong> songList = new ArrayList<>();
 
@@ -28,6 +40,16 @@ public class ListViewItemSong extends ListViewItem {
     private String singerName;
     private String filePath;
     private long duration;
+    private String genre;
+    private boolean isPlaying;
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
 
     public ListViewItemSong() {
         super();
@@ -74,6 +96,14 @@ public class ListViewItemSong extends ListViewItem {
         return duration;
     }
 
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
     @Override
     public View getView(final LayoutInflater inflater, ViewGroup parent) {
         View view = super.getView();
@@ -103,20 +133,23 @@ public class ListViewItemSong extends ListViewItem {
         musicSinger.setEllipsize(TextUtils.TruncateAt.END);
         musicSinger.setSingleLine(true);
 
-        onClickListener = new View.OnClickListener() {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 BioMusicPlayerApplication.getInstance().getServiceInterface().play(songList.indexOf(ListViewItemSong.this)); // 선택한 오디오재생
-                Toast.makeText(inflater.getContext(), songList.indexOf(ListViewItemSong.this) + " " + getMusicName(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(inflater.getContext(), songList.indexOf(ListViewItemSong.this) + " " + getMusicName(), Toast.LENGTH_SHORT).show();
             }
         };
+
+        view.setOnClickListener(onClickListener);
+
+        if(isPlaying()) {
+            view.setBackgroundResource(R.drawable.bg_gradient);
+        } else {
+            view.setBackgroundResource(android.R.drawable.list_selector_background);
+        }
 
         return view;
     }
 
-    private View.OnClickListener onClickListener;
-
-    public View.OnClickListener getOnClickListener() {
-        return onClickListener;
-    }
 }

@@ -39,24 +39,30 @@ public class ListViewItemFaceEmotion extends ListViewItem {
         this.face = face;
     }
 
+    public ListViewItemFaceEmotion() {
+        super();
+        super.setLayoutId(R.layout.listview_item_face_emotion);
+    }
+
     @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View view = super.getView();
         if (view != null) return view;
 
-        view = inflater.inflate(R.layout.listview_item_face_emotion, parent, false);
+        view = inflater.inflate(getLayoutId(), parent, false);
         super.setView(view);
 
         ImageView faceImage = view.findViewById(R.id.image_view_face);
+        LinearLayout linearLayout = view.findViewById(R.id.face_info);
 
         //detectAndFrame 이후의 Bitmap
         faceImage.setImageBitmap(profileBitmap);
 
-        LinearLayout linearLayout = view.findViewById(R.id.face_info);
+        if (getFace() == null) return view;
 
         double max = 0;
         Map<String,Double> map = new HashMap<>();
-        for (Field data : face.getEmotion().getClass().getDeclaredFields()) {
+        for (Field data : getFace().getEmotion().getClass().getDeclaredFields()) {
             String strName = data.getName();
             double value = 0;
             try {

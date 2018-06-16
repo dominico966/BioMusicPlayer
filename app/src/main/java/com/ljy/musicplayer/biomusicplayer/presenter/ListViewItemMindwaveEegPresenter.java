@@ -1,12 +1,15 @@
 package com.ljy.musicplayer.biomusicplayer.presenter;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.model.Mindwave;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemMindwaveEeg;
+import com.neurosky.AlgoSdk.NskAlgoSdk;
 import com.neurosky.AlgoSdk.NskAlgoType;
 
 
