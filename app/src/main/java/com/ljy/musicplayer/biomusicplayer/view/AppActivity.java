@@ -14,6 +14,8 @@ import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -97,12 +99,14 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
 
         ViewPager viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabs);
-
         TabAdapter adapter = new TabAdapter(getSupportFragmentManager());
 
         //탭 추가
-        adapter.addFragment(new Tab1Fragment(), "Music");
-        adapter.addFragment(new Tab2Fragment(), "Graph");
+        Fragment fragmentTab1 = Tab1Fragment.newInstance();
+        Fragment fragmentTab2 = Tab2Fragment.newInstance();
+
+        adapter.addFragment(fragmentTab1, "Music");
+        adapter.addFragment(fragmentTab2, "Graph");
         viewPager.setAdapter(adapter);
 
         tabLayout.setupWithViewPager(viewPager);

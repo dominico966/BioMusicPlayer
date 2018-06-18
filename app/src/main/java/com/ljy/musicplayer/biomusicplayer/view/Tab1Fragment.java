@@ -48,6 +48,11 @@ public class Tab1Fragment extends Fragment {
     private ListViewItemSongPresenter listViewItemSongPresenter;
 
     public Tab1Fragment() {
+        super();
+    }
+    public static Tab1Fragment newInstance() {
+        Tab1Fragment instance = new Tab1Fragment();
+        return instance;
     }
 
     @Nullable

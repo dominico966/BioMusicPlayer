@@ -48,6 +48,8 @@ public class ListViewItemPieChartPresenter extends ListViewItemPresenter impleme
 
     @Override
     public void setEvent() {
+        if(model.getView() == null) return;
+
         PieChart pieChart = model.getPieChart();
 
         /*

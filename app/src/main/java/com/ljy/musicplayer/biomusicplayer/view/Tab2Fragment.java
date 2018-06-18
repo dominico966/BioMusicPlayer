@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,11 @@ public class Tab2Fragment extends Fragment {
     private BioMusicPlayerApplication app;
 
     public Tab2Fragment() {
+        super();
+    }
+    public static Tab2Fragment newInstance() {
+        Tab2Fragment instance = new Tab2Fragment();
+        return instance;
     }
 
     @Nullable

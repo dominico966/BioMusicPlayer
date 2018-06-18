@@ -32,6 +32,8 @@ public class ListViewItemSongSuggestPresenter extends ListViewItemPresenter {
 
     @Override
     public void setEvent() {
+        if(model.getView() == null) return;
+
         model.getView().findViewById(R.id.btnHappiness).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

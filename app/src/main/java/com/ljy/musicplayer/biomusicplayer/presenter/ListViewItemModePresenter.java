@@ -41,6 +41,7 @@ public class ListViewItemModePresenter extends ListViewItemPresenter{
 
     @Override
     public void setEvent() {
+        if(model.getView() == null) return;
         model.setOnToggleButtonClick(toggleButtonEvent);
     }
 
