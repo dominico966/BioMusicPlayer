@@ -123,7 +123,7 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
                         TextView txtAtt = copyView.findViewById(R.id.status_att);
                         txtAtt.setText(att);
 
-                        if (i <= 30 && isGoodSignal) {
+                        if (0 < i && i <= 30 && isGoodSignal) {
                             final Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(
                                     new long[]{100, 1000}

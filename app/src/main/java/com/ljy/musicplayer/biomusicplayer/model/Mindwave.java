@@ -54,8 +54,6 @@ public abstract class Mindwave extends NskAlgoSdk {
 
     public abstract void onMindwaveConnected();
 
-
-    // algoType 추가 메소드
     private void setAlgoType(NskAlgoType[] args) {
         int algoTypes = 0;
         for (NskAlgoType v : args) {
@@ -65,7 +63,6 @@ public abstract class Mindwave extends NskAlgoSdk {
         int ret = this.NskAlgoInit(algoTypes, mActivity.getFilesDir().getAbsolutePath());
     }
 
-    //TgHandler
     private TgStreamHandler callback = new TgStreamHandler() {
         @Override
         public void onStatesChanged(int connectionStates) {

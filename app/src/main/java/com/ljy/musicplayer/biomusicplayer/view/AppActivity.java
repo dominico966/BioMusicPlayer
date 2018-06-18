@@ -28,9 +28,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.model.AudioService;
@@ -250,32 +256,58 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // 보이스 icon 클릭 시
-        if (item.getItemId() == R.id.menu_voice_scan) {
-            if (!isVoiceExecute) {
-                intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getPackageName());
-                Log.d("package", getPackageName() + "");
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 10);
+        switch (item.getItemId()) {
+            case R.id.menu_voice_scan: {
+                if (!isVoiceExecute) {
+                    intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getPackageName());
+                    Log.d("package", getPackageName() + "");
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+                    intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 10);
 
-                isVoiceExecute = true;
-                invalidateOptionsMenu();
+                    isVoiceExecute = true;
+                    invalidateOptionsMenu();
 
-                Toast.makeText(this, "음성인식 실행", Toast.LENGTH_SHORT).show();
-                mRecognizer.startListening(intent);     // 음성 읽기 시작.
-            } else {
-                isVoiceExecute = false;
-                invalidateOptionsMenu();
-                Toast.makeText(this, "음성인식 취소", Toast.LENGTH_SHORT).show();
-                mRecognizer.stopListening();
+                    Toast.makeText(this, "음성인식 실행", Toast.LENGTH_SHORT).show();
+                    mRecognizer.startListening(intent);     // 음성 읽기 시작.
+                } else {
+                    isVoiceExecute = false;
+                    invalidateOptionsMenu();
+                    Toast.makeText(this, "음성인식 취소", Toast.LENGTH_SHORT).show();
+                    mRecognizer.stopListening();
+                }
             }
+            break;
+
+            case R.id.menu_logout: {
+                logout();
+                finish();
+            }
+            break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+            }
+        });
+        LoginManager.getInstance().logOut();
+        UserManagement userManagement = UserManagement.getInstance();
+        userManagement.requestLogout(new LogoutResponseCallback() {
+            @Override
+            public void onCompleteLogout() {
+            }
+        });
+        Session.getCurrentSession().close();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        logout();
         unregisterBroadcast();
     }
 
