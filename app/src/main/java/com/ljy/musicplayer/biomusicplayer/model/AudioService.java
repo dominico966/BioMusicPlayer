@@ -8,6 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 
+import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
 import com.ljy.musicplayer.biomusicplayer.view.NotificationPlayer;
 
@@ -103,6 +104,10 @@ public class AudioService extends Service {
                 forward();
             } else if (CommandActions.CLOSE.equals(action)) {
                 pause();
+                if(BioMusicPlayerApplication.getCurrentActivity() == null) {
+                    BioMusicPlayerApplication.logout();
+                }
+
                 removeNotificationPlayer();
             }
         }

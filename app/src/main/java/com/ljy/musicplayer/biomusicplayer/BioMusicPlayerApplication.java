@@ -5,8 +5,17 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.ljy.musicplayer.biomusicplayer.model.Mindwave;
 import com.ljy.musicplayer.biomusicplayer.presenter.AudioServiceInterface;
 
@@ -14,7 +23,6 @@ import java.io.File;
 
 public class BioMusicPlayerApplication extends Application {
 
-    private static volatile BioMusicPlayerApplication obj = null;
     private static volatile Activity currentActivity = null;
 
     private File musicDir;
@@ -58,7 +66,6 @@ public class BioMusicPlayerApplication extends Application {
         Log.d("start", "" + "start application");
         super.onCreate();
         mInstance = this;
-        obj = this;
         mInterface = new AudioServiceInterface(getApplicationContext());
         musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
     }
@@ -75,18 +82,29 @@ public class BioMusicPlayerApplication extends Application {
         return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
     }
 
+    public static void logout() {
+        LoginManager.getInstance().logOut();
+        UserManagement userManagement = UserManagement.getInstance();
+        userManagement.requestLogout(new LogoutResponseCallback() {
+            @Override
+            public void onCompleteLogout() {
+            }
+        });
+        Session.getCurrentSession().close();
+    }
+
     @Override
     public void onTerminate() {
         super.onTerminate();
-        obj=null;
         mInstance = null;
+        logout();
     }
 
     public static BioMusicPlayerApplication getGlobalApplicationContext(){
-        if(obj ==null)
+        if(mInstance ==null)
             throw new IllegalStateException("this application does not inherit com.kakao.GlobalApplication");
 
-        return obj;
+        return mInstance;
     }
 
     public static Activity getCurrentActivity(){

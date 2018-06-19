@@ -18,14 +18,19 @@ import com.dominic.skuface.FaceDetectionCamera;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.model.FaceCaptureController;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemFaceEmotion;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
+import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSuggest;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ListViewItemFaceEmotionPresenter extends ListViewItemPresenter {
     // MVP 모델
@@ -92,6 +97,38 @@ public class ListViewItemFaceEmotionPresenter extends ListViewItemPresenter {
         }
     }
 
+    private void randomPlay(FaceApi.Face face) {
+        if(face == null) return;
+
+        FaceApi.Face.Emotion emotion = face.getEmotion();
+
+        Map<ListViewItemSong.Genre,Double> map = new HashMap<>();
+        map.put(ListViewItemSong.Genre.Happiness,emotion.happiness);
+        map.put(ListViewItemSong.Genre.Surprise,emotion.surprise);
+        map.put(ListViewItemSong.Genre.Sadness,emotion.sadness);
+        map.put(ListViewItemSong.Genre.Anger,emotion.anger);
+
+        ListViewItemSong.Genre genre = null;
+        double max = 0;
+        for(Map.Entry<ListViewItemSong.Genre,Double> e : map.entrySet()) {
+            if(max < e.getValue()){
+                max = e.getValue();
+                genre = e.getKey();
+            }
+        }
+
+        ArrayList<ListViewItemSuggest> items = new ArrayList<>();
+        for(ListViewItemSuggest item : ListViewItemSuggest.suggests) {
+            if(genre.toString().equals(item.getGenre())) {
+                items.add(item);
+            }
+        }
+
+        int number = (int) (Math.random() * items.size());
+        ListViewItemSuggest selected = items.get(number);
+        BioMusicPlayerApplication.getInstance().getServiceInterface().play(ListViewItemSuggest.suggests.indexOf(selected));
+    }
+
     public void dismiss() {
         if (progressDialog != null)
             progressDialog.dismiss();
@@ -129,6 +166,7 @@ public class ListViewItemFaceEmotionPresenter extends ListViewItemPresenter {
                     actionBar.setIcon(bd);
                     actionBar.setDisplayShowHomeEnabled(true);
                     actionBar.setDisplayUseLogoEnabled(true);
+                    randomPlay(face);
 
                     outputFaceEmotionObject(model.getFace().getEmotion());
                 }

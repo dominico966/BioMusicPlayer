@@ -23,6 +23,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.Task;
 import com.kakao.auth.KakaoSDK;
 import com.kakao.auth.Session;
+import com.kakao.util.exception.KakaoException;
 import com.ljy.musicplayer.biomusicplayer.view.AppActivity;
 
 import org.json.JSONObject;
@@ -43,7 +44,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getAppKeyHash();
         getSupportActionBar().hide();
 
-        KakaoSDK.init(new KakaoSdkAdapter());
+        try {
+            KakaoSDK.init(new KakaoSdkAdapter());
+        } catch (KakaoSDK.AlreadyInitializedException e) {
+            e.printStackTrace();
+        }
         loginLib = new LoginLib(this, new AppActivity());
 
         // Google

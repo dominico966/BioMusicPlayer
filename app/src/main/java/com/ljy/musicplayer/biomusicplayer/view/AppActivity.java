@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -30,15 +29,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.kakao.auth.Session;
-import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.model.AudioService;
@@ -284,7 +277,7 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
             break;
 
             case R.id.menu_logout: {
-                logout();
+                BioMusicPlayerApplication.logout();
                 finish();
             }
             break;
@@ -292,26 +285,10 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
         return super.onOptionsItemSelected(item);
     }
 
-    private void logout() {
-        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this, new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-            }
-        });
-        LoginManager.getInstance().logOut();
-        UserManagement userManagement = UserManagement.getInstance();
-        userManagement.requestLogout(new LogoutResponseCallback() {
-            @Override
-            public void onCompleteLogout() {
-            }
-        });
-        Session.getCurrentSession().close();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        logout();
+        BioMusicPlayerApplication.logout();
         unregisterBroadcast();
     }
 
