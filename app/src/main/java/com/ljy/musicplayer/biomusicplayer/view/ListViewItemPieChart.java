@@ -42,9 +42,9 @@ public class ListViewItemPieChart extends ListViewItem {
         pieChart.setHoleColor(Color.WHITE);
         pieChart.setTransparentCircleRadius(61f);
 
-
         Legend legend = pieChart.getLegend();
         legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_CENTER);
+        legend.setFormToTextSpace(12f);
 
         return view;
     }

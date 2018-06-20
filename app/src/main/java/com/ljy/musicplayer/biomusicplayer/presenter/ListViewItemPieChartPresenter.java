@@ -11,6 +11,7 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
@@ -48,28 +49,44 @@ public class ListViewItemPieChartPresenter extends ListViewItemPresenter impleme
 
     @Override
     public void setEvent() {
-        if(model.getView() == null) return;
+        if (model.getView() == null) return;
 
         PieChart pieChart = model.getPieChart();
 
         /*
          * data loading codes......
          * */
-        FaceApi.Face.Emotion recentEmotion = readRecentFaceEmotionObject();
+        //FaceApi.Face.Emotion recentEmotion = readRecentFaceEmotionObject();
+        FaceApi.Face.Emotion recentEmotion = readAverageFaceEmotionObject();
         ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
 
-        if(recentEmotion == null) {
+        float minVal = 0.125f;
+        if (recentEmotion == null) {
             yValues.add(new PieEntry(0f, "기쁨"));
             yValues.add(new PieEntry(0f, "슬픔"));
             yValues.add(new PieEntry(0f, "중립"));
             yValues.add(new PieEntry(0f, "화남"));
             yValues.add(new PieEntry(0f, "놀람"));
+            yValues.add(new PieEntry(0f, "경멸"));
+            yValues.add(new PieEntry(0f, "역겨움"));
+            yValues.add(new PieEntry(0f, "공포"));
         } else {
-            yValues.add(new PieEntry((float) recentEmotion.happiness, "기쁨"));
-            yValues.add(new PieEntry((float) recentEmotion.sadness, "슬픔"));
-            yValues.add(new PieEntry((float) recentEmotion.neutral, "중립"));
-            yValues.add(new PieEntry((float) recentEmotion.anger, "화남"));
-            yValues.add(new PieEntry((float) recentEmotion.surprise, "놀람"));
+            if (recentEmotion.happiness > minVal)
+                yValues.add(new PieEntry((float) recentEmotion.happiness, "기쁨"));
+            if (recentEmotion.sadness > minVal)
+                yValues.add(new PieEntry((float) recentEmotion.sadness, "슬픔"));
+            if (recentEmotion.neutral > minVal)
+                yValues.add(new PieEntry((float) recentEmotion.neutral, "중립"));
+            if (recentEmotion.anger > minVal)
+                yValues.add(new PieEntry((float) recentEmotion.anger, "화남"));
+            if (recentEmotion.surprise > minVal)
+                yValues.add(new PieEntry((float) recentEmotion.surprise, "놀람"));
+            if (recentEmotion.contempt > minVal)
+                yValues.add(new PieEntry((float) recentEmotion.contempt, "경멸"));
+            if (recentEmotion.disgust > minVal)
+                yValues.add(new PieEntry((float) recentEmotion.disgust, "역겨움"));
+            if (recentEmotion.fear > minVal)
+                yValues.add(new PieEntry((float) recentEmotion.fear, "공포"));
         }
 
         /*Description description = new Description();
@@ -85,6 +102,7 @@ public class ListViewItemPieChartPresenter extends ListViewItemPresenter impleme
         dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
 
         PieData data = new PieData((dataSet));
+        data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(10f);
         data.setValueTextColor(Color.BLACK);
 
@@ -116,7 +134,7 @@ public class ListViewItemPieChartPresenter extends ListViewItemPresenter impleme
             }
         });
 
-        if(fileList.length <= 0) return null;
+        if (fileList.length <= 0) return null;
 
         try {
             FileInputStream fis = new FileInputStream(fileList[fileList.length - 1]);
@@ -128,6 +146,51 @@ public class ListViewItemPieChartPresenter extends ListViewItemPresenter impleme
         }
 
         return recentEmotion;
+    }
+
+    public FaceApi.Face.Emotion readAverageFaceEmotionObject() {
+        FaceApi.Face.Emotion avgEmotion = new FaceApi.Face.Emotion(0, 0, 0, 0, 0, 0, 0, 0);
+
+        File dir = activity.getFilesDir();
+        File[] fileList = dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.contains(".face");
+            }
+        });
+
+        if (fileList.length <= 0) return null;
+
+        for (File f : fileList) {
+            try {
+                FileInputStream fis = new FileInputStream(f);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                FaceApi.Face.Emotion t = (FaceApi.Face.Emotion) ois.readObject();
+                ois.close();
+                avgEmotion.fear += t.fear;
+                avgEmotion.disgust += t.disgust;
+                avgEmotion.contempt += t.contempt;
+                avgEmotion.anger += t.anger;
+                avgEmotion.happiness += t.happiness;
+                avgEmotion.neutral += t.neutral;
+                avgEmotion.sadness += t.sadness;
+                avgEmotion.surprise += t.surprise;
+
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        avgEmotion.fear /= fileList.length;
+        avgEmotion.disgust /= fileList.length;
+        avgEmotion.contempt /= fileList.length;
+        avgEmotion.anger /= fileList.length;
+        avgEmotion.happiness /= fileList.length;
+        avgEmotion.neutral /= fileList.length;
+        avgEmotion.sadness /= fileList.length;
+        avgEmotion.surprise /= fileList.length;
+
+        return avgEmotion;
     }
 
     @Override
