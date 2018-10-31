@@ -20,13 +20,19 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.model.ListViewItem;
 import com.ljy.musicplayer.biomusicplayer.model.Mindwave;
 import com.neurosky.AlgoSdk.NskAlgoSdk;
 import com.neurosky.AlgoSdk.NskAlgoSignalQuality;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public class ListViewItemMindwaveEeg extends ListViewItem {
@@ -109,6 +115,12 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
                         addRawEntry(new float[]{delta, theta, alpha, beta, gamma});
                     }
                 });
+
+                try {
+                    sendEggInfoToServer(delta, theta, alpha, beta, gamma);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -212,6 +224,29 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
         });
 
         return view;
+    }
+
+    private void sendEggInfoToServer(final float delta, final float theta, final float alpha, final float beta, final float gamma) throws IOException {
+        Gson gson = new Gson();
+        JsonObject jo = new JsonObject();
+        jo.addProperty("alpha",alpha);
+        jo.addProperty("beta",beta);
+        jo.addProperty("theta",theta);
+        jo.addProperty("delta",delta);
+        jo.addProperty("gamma",gamma);
+
+        MediaType json = MediaType.parse("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+
+        okhttp3.RequestBody body = RequestBody.create(json, gson.toJson(jo));
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(BioMusicPlayerApplication.getInformationServerUrl())
+                .post(body)
+                .build();
+
+        okhttp3.Response response = client.newCall(request).execute();
+
+        Log.d("Egg send to server",response.message());
     }
 
 

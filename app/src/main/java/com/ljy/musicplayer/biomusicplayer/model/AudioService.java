@@ -8,6 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 
+import android.util.Log;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemSong;
 import com.ljy.musicplayer.biomusicplayer.view.NotificationPlayer;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 public class AudioService extends Service {
     private boolean isPrepared;
-    private int mPreviousPostion;
+    private int mPreviousPosition;
     private int mCurrentPosition;
     private MediaPlayer mMediaPlayer;
     private ListViewItemSong mAudioItem;
@@ -50,7 +51,7 @@ public class AudioService extends Service {
                 updateNotificationPlayer();
 
                 Intent intent = new Intent("biomusicplayer.music.play");
-                intent.putExtra("previousPosition",mPreviousPostion);
+                intent.putExtra("previousPosition", mPreviousPosition);
                 intent.putExtra("currentPosition",mCurrentPosition);
                 sendBroadcast(intent);
 
@@ -103,15 +104,19 @@ public class AudioService extends Service {
             } else if (CommandActions.FORWARD.equals(action)) {
                 forward();
             } else if (CommandActions.CLOSE.equals(action)) {
-                pause();
-                if(BioMusicPlayerApplication.getCurrentActivity() == null) {
-                    BioMusicPlayerApplication.logout();
-                }
-
-                removeNotificationPlayer();
+                close();
             }
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void close() {
+        pause();
+        if(BioMusicPlayerApplication.getCurrentActivity() == null) {
+            BioMusicPlayerApplication.logout();
+        }
+
+        removeNotificationPlayer();
     }
 
     // Music 끝내기
@@ -164,7 +169,7 @@ public class AudioService extends Service {
 
     public void play(int position) {
         if(position < 0) position = 0;
-        mPreviousPostion = mCurrentPosition;
+        mPreviousPosition = mCurrentPosition;
         mCurrentPosition = position;
         mAudioItem = ListViewItemSong.songList.get(mCurrentPosition);
         stop();
@@ -236,7 +241,7 @@ public class AudioService extends Service {
 
     // 음악 상태 변경 이벤트 발생 시 Broadcast 메시지 전송->UI 출력
     public class BroadcastActions {
-        public final static String PREPARED = "PREPARED";
-        public final static String PLAY_STATE_CHANGED = "PLAY_STATE_CHANGED";
+        public final static String PREPARED = "com.ljy.musicplayer.PREPARED";
+        public final static String PLAY_STATE_CHANGED = "com.ljy.musicplayer.PLAY_STATE_CHANGED";
     }
 }

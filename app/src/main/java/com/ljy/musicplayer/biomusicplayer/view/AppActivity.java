@@ -2,7 +2,6 @@ package com.ljy.musicplayer.biomusicplayer.view;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -35,7 +34,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
 import com.ljy.musicplayer.biomusicplayer.model.AudioService;
+import com.ljy.musicplayer.biomusicplayer.model.CommandActions;
 import com.ljy.musicplayer.biomusicplayer.presenter.TabAdapter;
+import com.ljy.musicplayer.biomusicplayer.presenter.UiUpdateBroadcastReceiver;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,8 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
     private TextView mTxtDuration;
     private ImageButton mBtnPlayPause;
     private SeekBar mSeekBar;
+
+    private BroadcastReceiver mBroadcastReceiver;
 
     private GoogleSignInClient mGoogleSignInClient; // google
 
@@ -157,26 +160,32 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
         mRecognizer.setRecognitionListener(new VoiceListener());
     }
 
-    /*브로드캐스트 리시버*/
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateUI();
-        }
-    };
-
     //브로드캐스트 등록
     public void registerBroadcast() {
         Log.d("registerBroadcast", "registerBroadcast() start...");
+
+        UiUpdateBroadcastReceiver uubr = new UiUpdateBroadcastReceiver();
+        uubr.setOnStateChangeListener(new UiUpdateBroadcastReceiver.OnStateChangeListener() {
+            @Override
+            public void onPlayStateChange() {
+                updateUI();
+            }
+        });
+        mBroadcastReceiver = uubr;
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioService.BroadcastActions.PLAY_STATE_CHANGED);
-        registerReceiver(mBroadcastReceiver, filter);
+
+        registerReceiver(mBroadcastReceiver,filter);
         Log.d("registerBroadcast end", "registerBroadcast() END...");
     }
 
     //해제
     public void unregisterBroadcast() {
-        unregisterReceiver(mBroadcastReceiver);
+        if(mBroadcastReceiver != null) {
+            unregisterReceiver(mBroadcastReceiver);
+            mBroadcastReceiver = null;
+        }
     }
 
     //UI update
@@ -204,10 +213,11 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
         }
         ListViewItemSong audioItem = BioMusicPlayerApplication.getInstance().getServiceInterface().getAudioItem();
         if (audioItem != null) {
+            int index = ListViewItemSong.songList.indexOf(audioItem);
             mImgAlbumArt.setImageDrawable(audioItem.getMusicImg());
             mTxtTitle.setText(audioItem.getMusicName());
 
-            ListViewItemSuggest audioItemSuggested = ListViewItemSuggest.suggests.get(ListViewItemSong.songList.indexOf(audioItem));
+            ListViewItemSuggest audioItemSuggested = ListViewItemSuggest.suggests.get(index);
             audioItemSuggested.setPlaying(true);
             audioItem.setPlaying(true);
 
@@ -217,6 +227,7 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
             mTxtDuration.setText(String.format(getString(R.string.time_format), min, sec));
             mSeekBar.setMax(duration);
             mHandler.post(seekbarDurationAnimationTask);
+
         } else {
             mImgAlbumArt.setImageResource(R.drawable.empty_albumart);
             mTxtTitle.setText("재생중인 음악이 없습니다.");
@@ -295,22 +306,31 @@ public class AppActivity extends AppCompatActivity implements View.OnClickListen
     //OnClick 리스너 구현
     @Override
     public void onClick(View view) {
+        Intent intent = null;
         switch (view.getId()) {
             case R.id.lin_miniplayer:
                 // 플레이어 화면으로 이동할 코드가 들어갈 예정
                 break;
             case R.id.btn_rewind:
                 // 이전곡으로 이동
-                BioMusicPlayerApplication.getInstance().getServiceInterface().rewind();
+//                BioMusicPlayerApplication.getInstance().getServiceInterface().rewind();
+                intent = new Intent(CommandActions.REWIND);
                 break;
             case R.id.btn_play_pause:
                 // 재생 또는 일시정지
-                BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
+//                BioMusicPlayerApplication.getInstance().getServiceInterface().togglePlay();
+                intent = new Intent(CommandActions.TOGGLE_PLAY);
                 break;
             case R.id.btn_forward:
                 // 다음곡으로 이동
-                BioMusicPlayerApplication.getInstance().getServiceInterface().forward();
+//                BioMusicPlayerApplication.getInstance().getServiceInterface().forward();
+                intent = new Intent(CommandActions.FORWARD);
                 break;
+        }
+
+        if(intent !=null) {
+            intent.setPackage(this.getPackageName());
+            startService(intent);
         }
     }
 

@@ -25,9 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".view.AppActivity"/>
-        <!--<activity android:name=".view.AppActivity">-->
-        <activity android:name=".MainActivity">
+        <activity android:name=".view.AppActivity">
+        <!--<activity android:name=".MainActivity">-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -39,18 +38,12 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="REWIND" />
-                <action android:name="TOGGLE_PLAY" />
-                <action android:name="FORWARD" />
-                <action android:name="CLOSE" />
+                <action android:name="com.ljy.musicplayer.REWIND" />
+                <action android:name="com.ljy.musicplayer.TOGGLE_PLAY" />
+                <action android:name="com.ljy.musicplayer.FORWARD" />
+                <action android:name="com.ljy.musicplayer.CLOSE" />
             </intent-filter>
         </service>
-
-        <receiver android:name=".presenter.UiUpdateBroadcastReceiver">
-            <intent-filter>
-                <action android:name="biomusicplayer.music.play" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

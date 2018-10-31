@@ -102,6 +102,7 @@ public class NotificationPlayer {
             Intent actionForward = new Intent(CommandActions.FORWARD);
             Intent actionRewind = new Intent(CommandActions.REWIND);
             Intent actionClose = new Intent(CommandActions.CLOSE);
+
             PendingIntent togglePlay = PendingIntent.getService(mService, 0, actionTogglePlay, 0);
             PendingIntent forward = PendingIntent.getService(mService, 0, actionForward, 0);
             PendingIntent rewind = PendingIntent.getService(mService, 0, actionRewind, 0);

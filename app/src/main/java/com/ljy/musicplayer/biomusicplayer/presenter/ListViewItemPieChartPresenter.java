@@ -15,6 +15,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
+import com.ljy.musicplayer.biomusicplayer.model.DBOpenHelper;
 import com.ljy.musicplayer.biomusicplayer.view.ListViewItemPieChart;
 
 import java.io.File;
@@ -57,7 +58,14 @@ public class ListViewItemPieChartPresenter extends ListViewItemPresenter impleme
          * data loading codes......
          * */
         //FaceApi.Face.Emotion recentEmotion = readRecentFaceEmotionObject();
-        FaceApi.Face.Emotion recentEmotion = readAverageFaceEmotionObject();
+        DBOpenHelper dbOpenHelper = new DBOpenHelper(view.getActivity());
+//        FaceApi.Face.Emotion recentEmotion = readAverageFaceEmotionObject();
+        dbOpenHelper.open();
+        FaceApi.Face.Emotion recentEmotion = dbOpenHelper.selectEmotionAverage();
+        dbOpenHelper.close();
+
+        if(recentEmotion == null) recentEmotion = new FaceApi.Face.Emotion(0,0,0,0,0,0,0,0);
+
         ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
 
         float minVal = 0.125f;

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,11 +26,8 @@ import android.widget.Toast;
 
 import com.ljy.musicplayer.biomusicplayer.BioMusicPlayerApplication;
 import com.ljy.musicplayer.biomusicplayer.R;
-import com.ljy.musicplayer.biomusicplayer.presenter.ListViewAdapter;
-import com.ljy.musicplayer.biomusicplayer.presenter.ListViewItemFaceEmotionPresenter;
-import com.ljy.musicplayer.biomusicplayer.presenter.ListViewItemMindwaveEegPresenter;
-import com.ljy.musicplayer.biomusicplayer.presenter.ListViewItemModePresenter;
-import com.ljy.musicplayer.biomusicplayer.presenter.ListViewItemSongPresenter;
+import com.ljy.musicplayer.biomusicplayer.model.AudioService;
+import com.ljy.musicplayer.biomusicplayer.presenter.*;
 
 import java.io.File;
 
@@ -80,6 +78,7 @@ public class Tab1Fragment extends Fragment {
         listViewItemMindwaveEegPresenter = new ListViewItemMindwaveEegPresenter(listViewAdapter, listViewItemMindwaveEeg, this);
 
         checkPermissionReadStorage(getActivity());
+        registerBroadcast();
 
         return view;
     }
@@ -205,9 +204,46 @@ public class Tab1Fragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (listViewItemFaceEmotionPresenter != null)
             listViewItemFaceEmotionPresenter.dismiss();
+
+        unregisterBroadcast();
+
+        super.onDestroy();
     }
 
+    private BroadcastReceiver mBroadcastReceiver;
+    //브로드캐스트 등록
+    public void registerBroadcast() {
+        UiUpdateBroadcastReceiver uubr = new UiUpdateBroadcastReceiver();
+        uubr.setOnStateChangeListener(new UiUpdateBroadcastReceiver.OnStateChangeListener() {
+            @Override
+            public void onPlayStateChange() {
+                updateUI();
+            }
+        });
+        mBroadcastReceiver = uubr;
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AudioService.BroadcastActions.PLAY_STATE_CHANGED);
+
+        getActivity().registerReceiver(mBroadcastReceiver,filter);
+    }
+
+    //해제
+    public void unregisterBroadcast() {
+        if(mBroadcastReceiver != null) {
+            getActivity().unregisterReceiver(mBroadcastReceiver);
+            mBroadcastReceiver = null;
+        }
+    }
+
+    private void updateUI() {
+        ListViewItemSong audioItem = BioMusicPlayerApplication.getInstance().getServiceInterface().getAudioItem();
+        if (audioItem != null) {
+            int index = ListViewItemSong.songList.indexOf(audioItem);
+            listViewAdapter.notifyDataSetChanged();
+            listView.getChildAt(index);
+        }
+    }
 }

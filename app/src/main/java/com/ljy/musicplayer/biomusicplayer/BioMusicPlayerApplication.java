@@ -38,15 +38,22 @@ public class BioMusicPlayerApplication extends Application {
         return mInstance;
     }
 
+    public static String getInformationServerUrl() {
+        return "http://127.0.0.1";
+    }
+
     public File getMusicDir() {
         return musicDir;
     }
+
     public Mindwave getMindwave() {
         return mindwave;
     }
+
     public boolean isStudyMode() {
         return isStudyMode;
     }
+
     public AudioServiceInterface getServiceInterface() {
         return mInterface;
     }
@@ -54,9 +61,11 @@ public class BioMusicPlayerApplication extends Application {
     public void setMusicDir(File musicDir) {
         this.musicDir = musicDir;
     }
+
     public void setMindwave(Mindwave mindwave) {
         this.mindwave = mindwave;
     }
+
     public void setStudyMode(boolean studyMode) {
         isStudyMode = studyMode;
     }
@@ -83,14 +92,18 @@ public class BioMusicPlayerApplication extends Application {
     }
 
     public static void logout() {
-        LoginManager.getInstance().logOut();
-        UserManagement userManagement = UserManagement.getInstance();
-        userManagement.requestLogout(new LogoutResponseCallback() {
-            @Override
-            public void onCompleteLogout() {
-            }
-        });
-        Session.getCurrentSession().close();
+        try {
+            LoginManager.getInstance().logOut();
+            UserManagement userManagement = UserManagement.getInstance();
+            userManagement.requestLogout(new LogoutResponseCallback() {
+                @Override
+                public void onCompleteLogout() {
+                }
+            });
+            Session.getCurrentSession().close();
+        } catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -100,20 +113,20 @@ public class BioMusicPlayerApplication extends Application {
         logout();
     }
 
-    public static BioMusicPlayerApplication getGlobalApplicationContext(){
-        if(mInstance ==null)
+    public static BioMusicPlayerApplication getGlobalApplicationContext() {
+        if (mInstance == null)
             throw new IllegalStateException("this application does not inherit com.kakao.GlobalApplication");
 
         return mInstance;
     }
 
-    public static Activity getCurrentActivity(){
-        return  currentActivity;
+    public static Activity getCurrentActivity() {
+        return currentActivity;
     }
 
     //Activity 올라올때마다 Activity의 onCreate에서 호출해줘야한다.
     public static void setCurrentActivity(Activity currentActivity) {
-        BioMusicPlayerApplication.currentActivity=currentActivity;
+        BioMusicPlayerApplication.currentActivity = currentActivity;
     }
 
 }

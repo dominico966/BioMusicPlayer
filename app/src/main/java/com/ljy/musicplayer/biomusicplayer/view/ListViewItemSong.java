@@ -143,11 +143,11 @@ public class ListViewItemSong extends ListViewItem {
 
         view.setOnClickListener(onClickListener);
 
-        if(isPlaying()) {
-            view.setBackgroundResource(R.drawable.bg_gradient);
-        } else {
-            view.setBackgroundResource(android.R.drawable.list_selector_background);
-        }
+//        if(isPlaying()) {
+//            view.setBackgroundResource(R.drawable.bg_gradient);
+//        } else {
+//            view.setBackgroundResource(android.R.drawable.list_selector_background);
+//        }
 
         return view;
     }
