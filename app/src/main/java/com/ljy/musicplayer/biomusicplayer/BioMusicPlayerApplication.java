@@ -101,8 +101,8 @@ public class BioMusicPlayerApplication extends Application {
                 }
             });
             Session.getCurrentSession().close();
-        } catch (ExceptionInInitializerError e) {
-            e.printStackTrace();
+        } catch (ExceptionInInitializerError | NoClassDefFoundError ignore) {
+            ignore.printStackTrace();
         }
     }
 
