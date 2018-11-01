@@ -116,11 +116,16 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
                     }
                 });
 
-                try {
-                    sendEggInfoToServer(delta, theta, alpha, beta, gamma);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            sendEggInfoToServer(delta, theta, alpha, beta, gamma);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
             }
         });
 
@@ -240,7 +245,7 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
 
         okhttp3.RequestBody body = RequestBody.create(json, gson.toJson(jo));
         okhttp3.Request request = new okhttp3.Request.Builder()
-                .url(BioMusicPlayerApplication.getInformationServerUrl())
+                .url("http://172.16.98.50:8080/BioMusicPlayer/setdata.jsp")
                 .post(body)
                 .build();
 
@@ -280,7 +285,7 @@ public class ListViewItemMindwaveEeg extends ListViewItem {
         xl.setDrawGridLines(false);
         xl.setAvoidFirstLastClipping(true);
         xl.setEnabled(true);
-        //y축 (-20 ~ 20)
+        //y축 (-10 ~ 20)
         YAxis leftAxis = mStatusChart.getAxisLeft();
         leftAxis.setTextColor(Color.WHITE);
         leftAxis.setAxisMaximum(20f);
